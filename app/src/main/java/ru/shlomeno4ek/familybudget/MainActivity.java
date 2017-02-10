@@ -14,7 +14,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import ru.shlomeno4ek.familybudget.data.BudgetDbHelper;
 import ru.shlomeno4ek.familybudget.data.FamilyBudget;
@@ -94,7 +93,9 @@ public class MainActivity extends AppCompatActivity {
         String[] projectionOnPurse = {
                 FamilyBudget.PurseEntry._ID,
                 FamilyBudget.PurseEntry.COLUMN_NAME,
-                FamilyBudget.PurseEntry.COLUMN_OWNER};
+                FamilyBudget.PurseEntry.COLUMN_OWNER,
+                FamilyBudget.PurseEntry.COLUMN_BALANS,
+                FamilyBudget.PurseEntry.COLUMN_RESERVE};
 
         String[] projectionOnBudget = {
                 FamilyBudget.BudgetEntry._ID,
@@ -123,6 +124,8 @@ public class MainActivity extends AppCompatActivity {
             int idColumnIndex = cursor.getColumnIndex(FamilyBudget.PurseEntry._ID);
             int nameColumnIndex = cursor.getColumnIndex(FamilyBudget.PurseEntry.COLUMN_NAME);
             int ownerColumnIndex = cursor.getColumnIndex(FamilyBudget.PurseEntry.COLUMN_OWNER);
+            int balansColumnIndex = cursor.getColumnIndex(FamilyBudget.PurseEntry.COLUMN_BALANS);
+            int reserveColumnIndex = cursor.getColumnIndex(FamilyBudget.PurseEntry.COLUMN_RESERVE);
 
             // Проходим через все ряды
             while (cursor.moveToNext()) {
@@ -130,9 +133,11 @@ public class MainActivity extends AppCompatActivity {
                 int currentID = cursor.getInt(idColumnIndex);
                 String currentName = cursor.getString(nameColumnIndex);
                 String currentOwner = cursor.getString(ownerColumnIndex);
+                Double currentBalans = cursor.getDouble(balansColumnIndex);
+                Double currentReserve = cursor.getDouble(reserveColumnIndex);
 
                 // Выводим значения каждого столбца
-                allPurses.add(currentName);
+                allPurses.add(currentName + "\nБаланс: " + currentBalans + ", Резерв: " + currentReserve);
 
                 //Добавляем в map пару ID - NAME
                 _idAndNamePurses.add(currentID);
@@ -146,6 +151,7 @@ public class MainActivity extends AppCompatActivity {
         if (allPurses.size()>0) {
             pursesInfo = new String[allPurses.size()];
             pursesInfo = allPurses.toArray(pursesInfo);
+            _tvMainActBalansAll.setText("");
         } else {
             _tvMainActBalansAll.setText("У вас пока не создано ни одного кошелька, дабавьте его через пункт меню");
             pursesInfo = new String[]{""};

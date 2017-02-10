@@ -17,6 +17,8 @@ public final class FamilyBudget {
         public final static String _ID = BaseColumns._ID;
         public final static String COLUMN_NAME = "name";
         public final static String COLUMN_OWNER = "owner";
+        public final static String COLUMN_BALANS = "balans";
+        public final static String COLUMN_RESERVE = "reserve";
     }
 
     public static final class BudgetEntry implements BaseColumns {

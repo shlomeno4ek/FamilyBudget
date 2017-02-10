@@ -43,7 +43,9 @@ public class BudgetDbHelper extends SQLiteOpenHelper {
         String SQL_CREATE_PURSE_TABLE = "CREATE TABLE " + FamilyBudget.PurseEntry.TABLE_NAME + " ("
                 + FamilyBudget.PurseEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + FamilyBudget.PurseEntry.COLUMN_NAME + " TEXT NOT NULL, "
-                + FamilyBudget.PurseEntry.COLUMN_OWNER  + " TEXT NOT NULL);";
+                + FamilyBudget.PurseEntry.COLUMN_OWNER  + " TEXT NOT NULL, "
+                + FamilyBudget.PurseEntry.COLUMN_BALANS + " REAL NOT NULL DEFAULT 0, "
+                + FamilyBudget.PurseEntry.COLUMN_RESERVE + " REAL NOT NULL DEFAULT 0);";
 
         String SQL_CREATE_BUDGET_TABLE = "CREATE TABLE " + FamilyBudget.BudgetEntry.TABLE_NAME + " ("
                 + FamilyBudget.BudgetEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
