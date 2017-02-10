@@ -38,6 +38,8 @@ public class ViewPurseActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(ViewPurseActivity.this, OperationActivity.class);
+                intent.putExtra("id",idPurse);
+                intent.putExtra("namePurse",tvNamePurse.getText().toString().split("\n")[0]);
                 startActivity(intent);
             }
         });
@@ -180,7 +182,7 @@ public class ViewPurseActivity extends AppCompatActivity {
             pursesInfo = allPurses.toArray(pursesInfo);
             return pursesInfo;
         } else {
-            tvNamePurse.setText("\nНи каких движений пока не проводилось, добавте операции для данного кошелька через кнопку");
+            tvNamePurse.append("\nНи каких движений пока не проводилось, добавте операции для данного кошелька через кнопку");
             String pursesInfo[] = null;
             return pursesInfo;
         }
