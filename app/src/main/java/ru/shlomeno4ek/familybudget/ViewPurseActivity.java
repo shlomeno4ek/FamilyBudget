@@ -74,13 +74,22 @@ public class ViewPurseActivity extends AppCompatActivity {
         // получим идентификатор выбранного пункта меню
         int id = item.getItemId();
 
+        // Создадим и откроем для чтения базу данных
+        SQLiteDatabase db = _mDbHelper.getReadableDatabase();
+
         // Операции для выбранного пункта меню
         switch (id) {
             case R.id.action_del_purse:
-                // Создадим и откроем для чтения базу данных
-                SQLiteDatabase db = _mDbHelper.getReadableDatabase();
                 db.delete(FamilyBudget.PurseEntry.TABLE_NAME, FamilyBudget.PurseEntry._ID + "=" + idPurse, null);
                 finish();
+                return true;
+
+            case R.id.action_edit_purse:
+                Intent intent = new Intent(ViewPurseActivity.this, EditPurseActivity.class);
+                intent.putExtra("id",idPurse);
+                intent.putExtra("namePurse",tvNamePurse.getText().toString().split("\n")[0]);
+                startActivity(intent);
+
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
