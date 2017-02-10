@@ -36,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
         if (temp != null) {
             ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, displayDatabaseInfo());
             _lvMain.setAdapter(adapter);
-        }
+        } else _lvMain.setAdapter(null);
 
     }
 
