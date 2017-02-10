@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">Семейный бюджет</string>
+
+    <string name="tv_addNewBudget">Создание нового кошелька...</string>
+    <string name="inputNamePurse">Введите навание кошелька</string>
+    <string name="btnCreate">Создать</string>
+
+    <string name="action_add_purse">Добавить кошелек</string>
+    <string name="action_about">О программе</string>
+    <string name="action_add_operations">Добавить операцию</string>
+    <string name="action_del_purse">Удалить кошелек</string>
+</resources>
