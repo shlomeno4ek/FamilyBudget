@@ -53,8 +53,11 @@ public class ViewPurseActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, displayDatabaseInfo());
-        _lvOperationsPurse.setAdapter(adapter);
+        String[] temp = displayDatabaseInfo();
+        if (temp != null) {
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, temp);
+            _lvOperationsPurse.setAdapter(adapter);
+        }
     }
 
     @Override
@@ -177,7 +180,8 @@ public class ViewPurseActivity extends AppCompatActivity {
             pursesInfo = allPurses.toArray(pursesInfo);
             return pursesInfo;
         } else {
-            String pursesInfo[] = new String[]{"Ни каких движений пока не проводилось, добавте операции для данного кошелька через кнопку"};
+            tvNamePurse.setText("\nНи каких движений пока не проводилось, добавте операции для данного кошелька через кнопку");
+            String pursesInfo[] = null;
             return pursesInfo;
         }
 

@@ -32,8 +32,11 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, displayDatabaseInfo());
-        _lvMain.setAdapter(adapter);
+        String[] temp = displayDatabaseInfo();
+        if (temp != null) {
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, displayDatabaseInfo());
+            _lvMain.setAdapter(adapter);
+        }
 
     }
 
@@ -154,7 +157,7 @@ public class MainActivity extends AppCompatActivity {
             _tvMainActBalansAll.setText("");
         } else {
             _tvMainActBalansAll.setText("У вас пока не создано ни одного кошелька, дабавьте его через пункт меню");
-            pursesInfo = new String[]{""};
+            pursesInfo = null;
         }
 
         return pursesInfo;
