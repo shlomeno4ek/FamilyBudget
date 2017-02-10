@@ -5,13 +5,11 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -28,7 +26,8 @@ public class MainActivity extends AppCompatActivity {
     private BudgetDbHelper _mDbHelper;
     private ListView _lvMain;
     private TextView _tvMainActBalansAll;
-    private HashMap<Integer,String> _idAndNamePurses;
+    private ArrayList<Integer> _idAndNamePurses;
+
 
     @Override
     protected void onResume() {
@@ -36,6 +35,7 @@ public class MainActivity extends AppCompatActivity {
 
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, displayDatabaseInfo());
         _lvMain.setAdapter(adapter);
+
     }
 
     @Override
@@ -47,10 +47,12 @@ public class MainActivity extends AppCompatActivity {
 
         _tvMainActBalansAll = (TextView) findViewById(R.id.tvMainActBalansAll);
         _lvMain = (ListView) findViewById(R.id.lvMain);
+
         _lvMain.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(MainActivity.this, ViewPurseActivity.class);
-                intent.putExtra("position",""+(++position));
+
+                intent.putExtra("position",""+_idAndNamePurses.get(position));
                 startActivity(intent);
             }
         });
@@ -114,7 +116,7 @@ public class MainActivity extends AppCompatActivity {
 
         ArrayList<String> allPurses = new ArrayList<>();
 
-        _idAndNamePurses = new HashMap<>();
+        _idAndNamePurses = new ArrayList<Integer>();
 
         try {
             // Узнаем индекс каждого столбца
@@ -133,7 +135,8 @@ public class MainActivity extends AppCompatActivity {
                 allPurses.add(currentName);
 
                 //Добавляем в map пару ID - NAME
-                _idAndNamePurses.put(currentID,currentName);
+                _idAndNamePurses.add(currentID);
+
             }
         } finally {
             // Всегда закрываем курсор после чтения
