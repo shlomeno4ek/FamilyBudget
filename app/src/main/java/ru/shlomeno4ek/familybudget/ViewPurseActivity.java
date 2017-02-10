@@ -72,7 +72,10 @@ public class ViewPurseActivity extends AppCompatActivity {
         // Операции для выбранного пункта меню
         switch (id) {
             case R.id.action_del_purse:
-
+                // Создадим и откроем для чтения базу данных
+                SQLiteDatabase db = _mDbHelper.getReadableDatabase();
+                db.delete(FamilyBudget.PurseEntry.TABLE_NAME, FamilyBudget.PurseEntry._ID + "=" + idPurse, null);
+                finish();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
