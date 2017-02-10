@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/familyBudget.iml" filepath="$PROJECT_DIR$/familyBudget.iml" />
       <module fileurl="file://$PROJECT_DIR$/gitFamilyBudget.iml" filepath="$PROJECT_DIR$/gitFamilyBudget.iml" />
     </modules>
   </component>
