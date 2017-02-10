@@ -16,6 +16,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import ru.shlomeno4ek.familybudget.data.BudgetDbHelper;
 import ru.shlomeno4ek.familybudget.data.FamilyBudget;
@@ -27,6 +28,7 @@ public class MainActivity extends AppCompatActivity {
     private BudgetDbHelper _mDbHelper;
     private ListView _lvMain;
     private TextView _tvMainActBalansAll;
+    private HashMap<Integer,String> _idAndNamePurses;
 
     @Override
     protected void onResume() {
@@ -83,6 +85,8 @@ public class MainActivity extends AppCompatActivity {
     private String[] displayDatabaseInfo() {
         // Создадим и откроем для чтения базу данных
         SQLiteDatabase db = _mDbHelper.getReadableDatabase();
+        //Массив с названиями для ListView
+        String pursesInfo[];
 
         // Зададим условие для выборки - список столбцов
         String[] projectionOnPurse = {
@@ -110,6 +114,8 @@ public class MainActivity extends AppCompatActivity {
 
         ArrayList<String> allPurses = new ArrayList<>();
 
+        _idAndNamePurses = new HashMap<>();
+
         try {
             // Узнаем индекс каждого столбца
             int idColumnIndex = cursor.getColumnIndex(FamilyBudget.PurseEntry._ID);
@@ -124,9 +130,10 @@ public class MainActivity extends AppCompatActivity {
                 String currentOwner = cursor.getString(ownerColumnIndex);
 
                 // Выводим значения каждого столбца
-                allPurses.add(currentID + " - " +
-                        currentName + " - " +
-                        currentOwner);
+                allPurses.add(currentName);
+
+                //Добавляем в map пару ID - NAME
+                _idAndNamePurses.put(currentID,currentName);
             }
         } finally {
             // Всегда закрываем курсор после чтения
@@ -134,13 +141,13 @@ public class MainActivity extends AppCompatActivity {
         }
 
         if (allPurses.size()>0) {
-            String pursesInfo[] = new String[allPurses.size()];
+            pursesInfo = new String[allPurses.size()];
             pursesInfo = allPurses.toArray(pursesInfo);
-            return pursesInfo;
         } else {
             _tvMainActBalansAll.setText("У вас пока не создано ни одного кошелька, дабавьте его через пункт меню");
-            return null;
+            pursesInfo = new String[]{""};
         }
 
+        return pursesInfo;
     }
 }
