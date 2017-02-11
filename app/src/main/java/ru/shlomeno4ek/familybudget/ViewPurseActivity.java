@@ -81,6 +81,7 @@ public class ViewPurseActivity extends AppCompatActivity {
         switch (id) {
             case R.id.action_del_purse:
                 db.delete(FamilyBudget.PurseEntry.TABLE_NAME, FamilyBudget.PurseEntry._ID + "=" + idPurse, null);
+                db.delete(FamilyBudget.BudgetEntry.TABLE_NAME, FamilyBudget.BudgetEntry.COLUMN_IDPURSE + "=" + idPurse, null);
                 finish();
                 return true;
 
