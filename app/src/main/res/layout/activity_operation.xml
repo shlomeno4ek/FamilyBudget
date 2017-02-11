@@ -13,6 +13,13 @@
     android:weightSum="1">
 
     <TextView
+        android:text="Добавление операции"
+        android:textSize="22sp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/textView4" />
+
+    <TextView
         android:text="Название кошелька"
         android:textSize="22sp"
         android:layout_width="match_parent"
@@ -39,12 +46,13 @@
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:inputType="textPersonName"
+        android:inputType="numberDecimal"
         android:ems="10"
-        android:layout_below="@+id/tvNameOperation"
+        android:id="@+id/etSumm"
+        android:hint="введите сумму операции"
+        android:layout_below="@+id/tvSumm"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:id="@+id/etName"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true" />
 
@@ -70,6 +78,7 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:id="@+id/etDate"
+        android:hint="введите дату операции"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true" />
 
@@ -89,12 +98,13 @@
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:inputType="numberDecimal"
+        android:inputType="textPersonName"
         android:ems="10"
-        android:id="@+id/etSumm"
-        android:layout_below="@+id/tvSumm"
+        android:layout_below="@+id/tvNameOperation"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
+        android:id="@+id/etName"
+        android:hint="введите название операции"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true" />
 
@@ -112,31 +122,45 @@
         android:layout_alignParentEnd="true" />
 
     <RadioGroup
-        android:layout_width="255dp"
-        android:layout_height="70dp"
-        android:layout_weight="0.98"
+        android:layout_width="187dp"
+        android:layout_height="wrap_content">
+
+    <RadioButton
+        android:id="@+id/radio_inner"
+        android:text="Внутрення"
+        android:layout_width="164dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="24dp" />
+
+        <RadioButton
+        android:id="@+id/radio_external"
+        android:text="Внешняя"
+        android:layout_width="164dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="24dp" />
+
+        <RadioButton
+        android:id="@+id/radio_translation"
+        android:text="Перевод"
+        android:layout_width="164dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="24dp" />
+
+    </RadioGroup>
+
+    <Spinner
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/spinner"
+        android:layout_weight="1"
         />
 
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="44dp">
-
-        <Spinner
-            android:layout_width="212dp"
-            android:layout_height="match_parent"
-            android:id="@+id/spinner"
-            android:layout_weight="1" />
-
-        <Button
-            android:text="ок"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignTop="@+id/button"
-            android:layout_centerHorizontal="true"
-            android:id="@+id/btnAccept"
-            android:layout_weight="1" />
-
-    </LinearLayout>
+    <Button
+        android:text="ок"
+        android:layout_width="146dp"
+        android:layout_height="66dp"
+        android:layout_alignTop="@+id/button"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/btnAccept" />
 
 </LinearLayout>
