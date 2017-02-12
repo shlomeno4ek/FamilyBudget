@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.Spinner;
@@ -19,11 +20,14 @@ public class OperationActivity extends AppCompatActivity {
     private EditText _etName;
     private EditText _etDate;
     private EditText _etSumm;
-    private Spinner _spinner;
+    private Spinner _spinnerNamePurse;
+    private Spinner _spinnerProcentReserve;
+
     private Button _btnAccept;
     private RadioButton _radio_inner;
     private RadioButton _radio_external;
     private RadioButton _radio_translation;
+    private CheckBox _checkBoxPutinReserve;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,7 +40,7 @@ public class OperationActivity extends AppCompatActivity {
         _tvNamePurse = (TextView) findViewById(R.id.tvNamePurse);
         _tvNamePurse.setText(intent.getStringExtra("namePurse"));
 
-        _spinner = (Spinner) findViewById(R.id.spinner);
+        _spinnerNamePurse = (Spinner) findViewById(R.id.spinnerNamePurse);
 
         _radio_inner = (RadioButton) findViewById(R.id.radio_inner);
         _radio_inner.setOnClickListener(radioButtonClickListener);
@@ -47,6 +51,18 @@ public class OperationActivity extends AppCompatActivity {
         _radio_translation = (RadioButton) findViewById(R.id.radio_translation);
         _radio_translation.setOnClickListener(radioButtonClickListener);
 
+        _checkBoxPutinReserve = (CheckBox) findViewById(R.id.checkBoxPutinReserve);
+        _checkBoxPutinReserve.setEnabled(false);
+        _checkBoxPutinReserve.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                _spinnerProcentReserve.setEnabled(true);
+            }
+        });
+
+        _spinnerProcentReserve = (Spinner) findViewById(R.id.spinnerProcentReserve);
+        _spinnerProcentReserve.setEnabled(false);
+
     }
 
     View.OnClickListener radioButtonClickListener = new View.OnClickListener() {
@@ -54,11 +70,17 @@ public class OperationActivity extends AppCompatActivity {
         public void onClick(View v) {
             RadioButton rb = (RadioButton)v;
             switch (rb.getId()) {
-                case R.id.radio_inner: _spinner.setEnabled(false);
+                case R.id.radio_inner:
+                    _spinnerNamePurse.setEnabled(false);
+                    _checkBoxPutinReserve.setEnabled(false);
                     break;
-                case R.id.radio_external: _spinner.setEnabled(false);
+                case R.id.radio_external:
+                    _spinnerNamePurse.setEnabled(false);
+                    _checkBoxPutinReserve.setEnabled(true);
                     break;
-                case R.id.radio_translation: _spinner.setEnabled(true);
+                case R.id.radio_translation:
+                    _spinnerNamePurse.setEnabled(true);
+                    _checkBoxPutinReserve.setEnabled(false);
                     break;
                 default:
                     break;
