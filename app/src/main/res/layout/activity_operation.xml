@@ -12,155 +12,152 @@
     android:orientation="vertical"
     android:weightSum="1">
 
-    <TextView
-        android:text="Добавление операции"
-        android:textSize="22sp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/textView4" />
-
-    <TextView
-        android:text="Название кошелька"
-        android:textSize="22sp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/tvNamePurse"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
-
-    <TextView
-        android:text="Сумма"
-        android:textSize="20sp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/tvNamePurse"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:id="@+id/tvSumm"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
-
-    <EditText
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:inputType="numberDecimal"
-        android:ems="10"
-        android:id="@+id/etSumm"
-        android:hint="введите сумму операции"
-        android:layout_below="@+id/tvSumm"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
-
-    <TextView
-        android:text="Дата операции"
-        android:textSize="20sp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/etName"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:id="@+id/tvDate"
-        android:textAppearance="@style/TextAppearance.AppCompat.Display1"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
-
-    <EditText
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:inputType="date"
-        android:ems="10"
-        android:layout_below="@+id/tvDate"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:id="@+id/etDate"
-        android:hint="введите дату операции"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
-
-    <TextView
-        android:text="Название оперции"
-        android:textSize="20sp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/tvNameOperation"
-        android:textAppearance="@style/TextAppearance.AppCompat.Display1"
-        android:layout_below="@+id/etName"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
-
-    <EditText
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:inputType="textPersonName"
-        android:ems="10"
-        android:layout_below="@+id/tvNameOperation"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:id="@+id/etName"
-        android:hint="введите название операции"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
-
-    <TextView
-        android:text="Тип оперции"
-        android:textSize="20sp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/etDate"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:id="@+id/tvTypeOperation"
-        android:textAppearance="@style/TextAppearance.AppCompat.Display1"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
-
-    <RadioGroup
-        android:layout_width="187dp"
-        android:layout_height="wrap_content">
-
-    <RadioButton
-        android:id="@+id/radio_inner"
-        android:text="Внутрення"
-        android:layout_width="164dp"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="24dp" />
-
-        <RadioButton
-        android:id="@+id/radio_external"
-        android:text="Внешняя"
-        android:layout_width="164dp"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="24dp" />
-
-        <RadioButton
-        android:id="@+id/radio_translation"
-        android:text="Перевод"
-        android:layout_width="164dp"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="24dp" />
-
-    </RadioGroup>
-
-    <Spinner
+    <LinearLayout
+        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/spinner"
-        android:layout_weight="1"
-        />
+        tools:ignore="UselessParent">
 
-    <Button
-        android:text="ок"
-        android:layout_width="146dp"
-        android:layout_height="66dp"
-        android:layout_alignTop="@+id/button"
-        android:layout_centerHorizontal="true"
-        android:id="@+id/btnAccept" />
+        <TextView
+            android:text="@string/addOperation"
+            android:textSize="24sp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/textView4"
+            android:layout_weight="0.00" />
+
+        <TextView
+            android:text="@string/tvNamePurse"
+            android:textSize="22sp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/tvNamePurse"
+            android:layout_alignParentTop="true"
+            tools:ignore="ObsoleteLayoutParam" />
+
+        <TextView
+            android:text="@string/summOperation"
+            android:textSize="20sp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/tvSumm" />
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="numberDecimal"
+            android:ems="10"
+            android:id="@+id/etSumm"
+            android:hint="@string/inputSummOperation" />
+
+        <TextView
+            android:text="@string/tvDate"
+            android:textSize="20sp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/tvDate"
+            android:textAppearance="@style/TextAppearance.AppCompat.Display1" />
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="date"
+            android:ems="10"
+            android:id="@+id/etDate"
+            android:hint="@string/inputDateOperation" />
+
+        <TextView
+            android:text="@string/nameOperation"
+            android:textSize="20sp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/tvNameOperation"
+            android:textAppearance="@style/TextAppearance.AppCompat.Display1" />
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textPersonName"
+            android:ems="10"
+            android:id="@+id/etName"
+            android:hint="@string/inputNameOperation" />
+
+        <TextView
+            android:text="@string/typeOperation"
+            android:textSize="20sp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/tvTypeOperation"
+            android:textAppearance="@style/TextAppearance.AppCompat.Display1" />
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="90dp">
+
+            <RadioGroup
+                android:layout_width="181dp"
+                android:layout_height="match_parent">
+
+                <RadioButton
+                android:id="@+id/radio_external"
+                android:text="@string/radioBattonExternal"
+                android:layout_width="162dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="24dp"
+                    tools:ignore="RtlHardcoded" />
+
+                <RadioButton
+                    android:id="@+id/radio_inner"
+                    android:text="@string/radioBattonInner"
+                    android:layout_width="163dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="24dp"
+                    tools:ignore="RtlHardcoded" />
+
+                <RadioButton
+                android:id="@+id/radio_translation"
+                android:text="@string/radioBattonTranslation"
+                android:layout_width="162dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="24dp"
+                    tools:ignore="RtlHardcoded" />
+
+            </RadioGroup>
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <CheckBox
+                    android:text="@string/putInReserve"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/checkBoxPutinReserve"
+                    android:layout_weight="1" />
+
+                <Spinner
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/spinnerProcentReserve"
+                    android:layout_weight="1" />
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <Spinner
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:id="@+id/spinnerNamePurse"
+            android:layout_weight="0.01" />
+
+        <Button
+            android:text="@string/btnOk"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/btnAccept" />
+
+    </LinearLayout>
 
 </LinearLayout>
