@@ -12,4 +12,18 @@
     <string name="action_edit_purse">Редактировать кошелек</string>
     <string name="etNamePurse">Название кошелька</string>
     <string name="btnSave">Сохранить</string>
+    <string name="tvNamePurse">Название кошелька</string>
+    <string name="radioBattonInner">Внутрення</string>
+    <string name="radioBattonExternal">Внешняя</string>
+    <string name="radioBattonTranslation">Перевод</string>
+    <string name="tvDate">Дата операции</string>
+    <string name="addOperation">Добавление операции</string>
+    <string name="nameOperation">Название оперции</string>
+    <string name="summOperation">Сумма</string>
+    <string name="typeOperation">Тип оперции</string>
+    <string name="inputDateOperation">введите дату операции</string>
+    <string name="inputNameOperation">введите название операции</string>
+    <string name="inputSummOperation">введите сумму операции</string>
+    <string name="btnOk">ок</string>
+    <string name="putInReserve">Отложить в резер</string>
 </resources>
