@@ -16,7 +16,8 @@
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:ignore="UselessParent">
+        tools:ignore="UselessParent"
+        android:weightSum="1">
 
         <TextView
             android:text="@string/addOperation"
@@ -58,13 +59,14 @@
             android:id="@+id/tvDate"
             android:textAppearance="@style/TextAppearance.AppCompat.Display1" />
 
-        <EditText
+        <TextView
+            android:text="@string/inputDateOperation"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="date"
-            android:ems="10"
-            android:id="@+id/etDate"
-            android:hint="@string/inputDateOperation" />
+            android:id="@+id/tvInputDate"
+            android:layout_weight="0.33"
+            android:paddingTop="10dp"
+            android:textSize="20sp"/>
 
         <TextView
             android:text="@string/nameOperation"
@@ -93,11 +95,12 @@
         <LinearLayout
             android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="90dp">
+            android:layout_height="90dp"
+            android:layout_weight="0.45">
 
             <RadioGroup
                 android:layout_width="181dp"
-                android:layout_height="match_parent">
+                android:layout_height="113dp">
 
                 <RadioButton
                 android:id="@+id/radio_external"
@@ -134,23 +137,23 @@
                     android:text="@string/putInReserve"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:id="@+id/checkBoxPutinReserve"
-                    android:layout_weight="1" />
+                    android:id="@+id/checkBoxPutInReserve"
+                    android:layout_weight="0.35" />
 
                 <Spinner
-                    android:layout_width="match_parent"
+                    android:layout_width="110dp"
                     android:layout_height="wrap_content"
                     android:id="@+id/spinnerProcentReserve"
-                    android:layout_weight="1" />
+                    android:layout_weight="0.06" />
             </LinearLayout>
 
         </LinearLayout>
 
         <Spinner
             android:layout_width="match_parent"
-            android:layout_height="0dp"
+            android:layout_height="wrap_content"
             android:id="@+id/spinnerNamePurse"
-            android:layout_weight="0.01" />
+            android:layout_weight="0.31" />
 
         <Button
             android:text="@string/btnOk"
