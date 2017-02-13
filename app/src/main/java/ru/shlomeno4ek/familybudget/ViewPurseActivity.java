@@ -156,7 +156,7 @@ public class ViewPurseActivity extends AppCompatActivity {
             int nameColumnIndexBudget = cursorBudget.getColumnIndex(FamilyBudget.BudgetEntry.COLUMN_NAME);
             int dateColumnIndexBudget = cursorBudget.getColumnIndex(FamilyBudget.BudgetEntry.COLUMN_DATE);
 
-            // Проходим через все ряды таблицы Purse
+            // Проходим через все ряды таблицы purse
             while (cursorPurse.moveToNext()) {
                 // Используем индекс для получения строки или числа
 //                int currentID = cursorPurse.getInt(idColumnIndexPurse);
@@ -166,7 +166,7 @@ public class ViewPurseActivity extends AppCompatActivity {
                 tvNamePurse.setText(currentName);
             }
 
-            // Проходим через все ряды таблицы Budget
+            // Проходим через все ряды таблицы budget
             while (cursorBudget.moveToNext()) {
                 // Используем индекс для получения строки или числа
                 int currentID = cursorBudget.getInt(idColumnIndexBudget);
