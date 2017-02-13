@@ -13,9 +13,9 @@
     <string name="etNamePurse">Название кошелька</string>
     <string name="btnSave">Сохранить</string>
     <string name="tvNamePurse">Название кошелька</string>
-    <string name="radioBattonInner">Внутрення</string>
+    <string name="radioBattonInner">Перевести в резерв</string>
     <string name="radioBattonExternal">Внешняя</string>
-    <string name="radioBattonTranslation">Перевод</string>
+    <string name="radioBattonTranslation">Перевод в другой кошелек</string>
     <string name="tvDate">Дата операции</string>
     <string name="addOperation">Добавление операции</string>
     <string name="nameOperation">Название оперции</string>
@@ -25,5 +25,8 @@
     <string name="inputNameOperation">введите название операции</string>
     <string name="inputSummOperation">введите сумму операции</string>
     <string name="btnOk">ок</string>
-    <string name="putInReserve">Отложить в резер</string>
+    <string name="putInReserve">Отложить % в резер</string>
+
+    <string name="choose_date">Выберите дату</string>
+    <string name="ready">Готово</string>
 </resources>
