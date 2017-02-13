@@ -21,7 +21,7 @@
     <string name="nameOperation">Название оперции</string>
     <string name="summOperation">Сумма</string>
     <string name="typeOperation">Тип оперции</string>
-    <string name="inputDateOperation">введите дату операции</string>
+    <string name="inputDateOperation">выберите дату операции</string>
     <string name="inputNameOperation">введите название операции</string>
     <string name="inputSummOperation">введите сумму операции</string>
     <string name="btnOk">ок</string>
