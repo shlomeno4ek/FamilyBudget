@@ -25,7 +25,10 @@ public class MainActivity extends AppCompatActivity {
     private BudgetDbHelper _mDbHelper;
     private ListView _lvMain;
     private TextView _tvMainActBalansAll;
+    private TextView _tvMainActReserveAll;
     private ArrayList<Integer> _idAndNamePurses;
+    private double balansAll;
+    private double reserveAll;
 
 
     @Override
@@ -38,6 +41,8 @@ public class MainActivity extends AppCompatActivity {
             _lvMain.setAdapter(adapter);
         } else _lvMain.setAdapter(null);
 
+
+
     }
 
     @Override
@@ -48,6 +53,7 @@ public class MainActivity extends AppCompatActivity {
         _mDbHelper = new BudgetDbHelper(this);
 
         _tvMainActBalansAll = (TextView) findViewById(R.id.tvMainActBalansAll);
+        _tvMainActReserveAll = (TextView) findViewById(R.id.tvMainActReserveAll);
         _lvMain = (ListView) findViewById(R.id.lvMain);
 
         _lvMain.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -142,6 +148,9 @@ public class MainActivity extends AppCompatActivity {
                 // Выводим значения каждого столбца
                 allPurses.add(currentName + "\nБаланс: " + currentBalans + ", Резерв: " + currentReserve);
 
+                balansAll+=currentBalans;
+                reserveAll+=currentReserve;
+
                 //Добавляем в map пару ID - NAME
                 _idAndNamePurses.add(currentID);
 
@@ -154,9 +163,11 @@ public class MainActivity extends AppCompatActivity {
         if (allPurses.size()>0) {
             pursesInfo = new String[allPurses.size()];
             pursesInfo = allPurses.toArray(pursesInfo);
-            _tvMainActBalansAll.setText("");
+            _tvMainActBalansAll.setText("Общий баланс: "+balansAll+" руб.");
+            _tvMainActReserveAll.setText("В резерве: "+balansAll+" руб.");
         } else {
             _tvMainActBalansAll.setText("У вас пока не создано ни одного кошелька, дабавьте его через пункт меню");
+            _tvMainActReserveAll.setText("");
             pursesInfo = null;
         }
 
