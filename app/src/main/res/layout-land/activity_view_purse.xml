@@ -22,7 +22,7 @@
         android:layout_toLeftOf="@+id/btnAddOperations"
         android:layout_toStartOf="@+id/btnAddOperations"
         android:textAppearance="@style/TextAppearance.AppCompat.Display1"
-        tools:ignore="RelativeOverlap,UnknownId" />
+        tools:ignore="RelativeOverlap,UnknownIdInLayout" />
 
     <ImageButton
         android:layout_width="wrap_content"
