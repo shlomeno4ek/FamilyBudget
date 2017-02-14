@@ -1,8 +1,11 @@
 package ru.shlomeno4ek.familybudget;
 
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -12,6 +15,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -26,6 +30,9 @@ public class ViewPurseActivity extends AppCompatActivity {
     private String idPurse;
     private BudgetDbHelper _mDbHelper;
     private ImageButton _imageBtnAddOperation;
+
+    AlertDialog.Builder ad;
+    Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +56,45 @@ public class ViewPurseActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         idPurse = intent.getStringExtra("position");
+
+        //Подтверждение удаления кошелька
+        context = ViewPurseActivity.this;
+        String title = "Удаление кошелька";
+        String message = "Вы действительно хотите удалить кошелек и все операции в нем?";
+        String button1String = "Да";
+        String button2String = "Нет";
+
+        ad = new AlertDialog.Builder(context);
+        ad.setTitle(title);  // заголовок
+        ad.setMessage(message); // сообщение
+        ad.setPositiveButton(button1String, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int arg1) {
+                Toast.makeText(context, "Кошелек удален",
+                        Toast.LENGTH_LONG).show();
+
+                // Создадим и откроем для чтения базу данных
+                SQLiteDatabase db = _mDbHelper.getReadableDatabase();
+
+                db.delete(FamilyBudget.PurseEntry.TABLE_NAME, FamilyBudget.PurseEntry._ID + "=" + idPurse, null);
+                db.delete(FamilyBudget.BudgetEntry.TABLE_NAME, FamilyBudget.BudgetEntry.COLUMN_IDPURSE + "=" + idPurse, null);
+
+                db.close();
+                finish();
+            }
+        });
+        ad.setNegativeButton(button2String, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int arg1) {
+                Toast.makeText(context, "Кошелек осталался цел", Toast.LENGTH_LONG)
+                        .show();
+            }
+        });
+        ad.setCancelable(true);
+        ad.setOnCancelListener(new DialogInterface.OnCancelListener() {
+            public void onCancel(DialogInterface dialog) {
+                Toast.makeText(context, "Кошелек осталался цел", Toast.LENGTH_LONG)
+                        .show();
+            }
+        });
     }
 
     @Override
@@ -74,15 +120,10 @@ public class ViewPurseActivity extends AppCompatActivity {
         // получим идентификатор выбранного пункта меню
         int id = item.getItemId();
 
-        // Создадим и откроем для чтения базу данных
-        SQLiteDatabase db = _mDbHelper.getReadableDatabase();
-
         // Операции для выбранного пункта меню
         switch (id) {
             case R.id.action_del_purse:
-                db.delete(FamilyBudget.PurseEntry.TABLE_NAME, FamilyBudget.PurseEntry._ID + "=" + idPurse, null);
-                db.delete(FamilyBudget.BudgetEntry.TABLE_NAME, FamilyBudget.BudgetEntry.COLUMN_IDPURSE + "=" + idPurse, null);
-                finish();
+                ad.show();
                 return true;
 
             case R.id.action_edit_purse:
