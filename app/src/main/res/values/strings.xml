@@ -26,6 +26,14 @@
     <string name="inputSummOperation">введите сумму операции</string>
     <string name="btnOk">ок</string>
     <string name="putInReserve">Отложить % в резер</string>
+    <string-array name="procent">
+        <item>5</item>
+        <item>10</item>
+        <item>15</item>
+        <item>20</item>
+        <item>25</item>
+        <item>30</item>
+    </string-array>
 
     <string name="choose_date">Выберите дату</string>
     <string name="ready">Готово</string>
