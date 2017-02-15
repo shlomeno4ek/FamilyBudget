@@ -53,12 +53,14 @@ public class OperationActivity extends AppCompatActivity {
         idPurse = intent.getStringExtra("id");
 
         _etSumm = (EditText) findViewById(R.id.etSumm);
+        _etName = (EditText) findViewById(R.id.etName);
 
         _tvNamePurse = (TextView) findViewById(R.id.tvNamePurse);
         _tvNamePurse.setText(intent.getStringExtra("namePurse"));
 
         _tvInputDate = (TextView) findViewById(R.id.tvInputDate);
         _tvInputDate.setClickable(true);
+        _tvInputDate.setText(myDay + "." + ++myMonth + "." + myYear);
         _tvInputDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -99,22 +101,39 @@ public class OperationActivity extends AppCompatActivity {
         _btnAccept.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (_etSumm.getText().toString().equals("") || _tvInputDate.getText().toString().equals(R.string.inputDateOperation) || _etName.getText().toString().equals("") || (_radio_external.isChecked() || _radio_inner.isChecked() || _radio_translation.isChecked())) {
+             try {
+
+                if (_etSumm.getText().toString()==null || _etName.getText().toString().equals("") || !(_radio_external.isChecked() || _radio_inner.isChecked() || _radio_translation.isChecked())) {
                     Toast.makeText(context, "Не все поля заполнены", Toast.LENGTH_LONG).show();
                 } else {
                     double summ = Double.parseDouble(_etSumm.getText().toString());
                     String date = _tvInputDate.getText().toString();
                     String name = _etName.getText().toString();
+
                     int summReserve = 0;
+
                     //Получаем id переключателя
                     int type = _radio_group.getCheckedRadioButtonId();
-                    if (type==0) {
-                        CheckBox _checkBoxPutInReserve = (CheckBox) findViewById(R.id.checkBoxPutInReserve);
-                        if (_checkBoxPutInReserve.isChecked()) {
-                            summReserve += summ/100*Integer.parseInt(_spinnerProcentReserve.getSelectedItem().toString());
-                        }
+                    System.out.println("type = " + type);
+                    switch (type) {
+                        case R.id.radio_external:
+                            CheckBox _checkBoxPutInReserve = (CheckBox) findViewById(R.id.checkBoxPutInReserve);
+                            if (_checkBoxPutInReserve.isChecked()) {
+                                summReserve += summ/100*Integer.parseInt(_spinnerProcentReserve.getSelectedItem().toString());
+                                System.out.println("spinner = "+_spinnerProcentReserve.getSelectedItem().toString());
+                                Toast.makeText(context, "тип 0 спинет id - " + _spinnerProcentReserve.getSelectedItemId(), Toast.LENGTH_LONG).show();
+                            }
+                            break;
+                        case R.id.radio_inner:
+
+                            break;
+                        case R.id.radio_translation:
+                            String NamePurseForTranslation = _spinnerNamePurse.getSelectedItem().toString();
+                            Toast.makeText(context, "тип 2 спинет id - " + _spinnerNamePurse.getSelectedItemId(), Toast.LENGTH_LONG).show();
+                            break;
                     }
                 }
+             } catch (Exception e) {e.printStackTrace();}
             }
         });
 
