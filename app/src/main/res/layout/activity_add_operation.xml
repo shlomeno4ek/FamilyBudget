@@ -108,24 +108,21 @@
                 android:text="@string/radioBattonExternal"
                 android:layout_width="162dp"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="24dp"
-                    tools:ignore="RtlHardcoded" />
+                android:layout_marginLeft="24dp" />
 
                 <RadioButton
                     android:id="@+id/radio_inner"
                     android:text="@string/radioBattonInner"
                     android:layout_width="163dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="24dp"
-                    tools:ignore="RtlHardcoded" />
+                    android:layout_marginLeft="24dp" />
 
                 <RadioButton
                 android:id="@+id/radio_translation"
                 android:text="@string/radioBattonTranslation"
                 android:layout_width="162dp"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="24dp"
-                    tools:ignore="RtlHardcoded" />
+                android:layout_marginLeft="24dp" />
 
             </RadioGroup>
 
@@ -155,7 +152,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/spinnerNamePurse"
-            android:layout_weight="0.31" />
+            android:layout_weight="0.31"
+            android:entries="@array/procent"/>
 
         <Button
             android:text="@string/btnOk"
