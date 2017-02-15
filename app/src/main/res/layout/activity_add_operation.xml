@@ -100,7 +100,8 @@
 
             <RadioGroup
                 android:layout_width="181dp"
-                android:layout_height="113dp">
+                android:layout_height="113dp"
+                android:id="@+id/radio_group">
 
                 <RadioButton
                 android:id="@+id/radio_external"
@@ -141,10 +142,11 @@
                     android:layout_weight="0.35" />
 
                 <Spinner
-                    android:layout_width="110dp"
+                    android:layout_width="125dp"
                     android:layout_height="wrap_content"
                     android:id="@+id/spinnerProcentReserve"
-                    android:layout_weight="0.06" />
+                    android:entries="@array/procent"
+                    android:layout_weight="0.10" />
             </LinearLayout>
 
         </LinearLayout>
