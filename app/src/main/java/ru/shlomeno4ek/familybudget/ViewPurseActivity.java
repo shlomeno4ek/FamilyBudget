@@ -39,6 +39,9 @@ public class ViewPurseActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_purse);
 
+        Intent intent = getIntent();
+        idPurse = intent.getStringExtra("id");
+
         _mDbHelper = new BudgetDbHelper(this);
         _imageBtnAddOperation = (ImageButton) findViewById(R.id.imageBtnAddOperation);
         _imageBtnAddOperation.setOnClickListener(new View.OnClickListener() {
@@ -54,8 +57,7 @@ public class ViewPurseActivity extends AppCompatActivity {
         tvNamePurse = (TextView) findViewById(R.id.tvNamePurse);
         _lvOperationsPurse =(ListView) findViewById(R.id.lvOperationsPurse);
 
-        Intent intent = getIntent();
-        idPurse = intent.getStringExtra("position");
+
 
         //Подтверждение удаления кошелька
         context = ViewPurseActivity.this;
