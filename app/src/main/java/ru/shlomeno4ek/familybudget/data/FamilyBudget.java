@@ -31,8 +31,9 @@ public final class FamilyBudget {
         public final static String COLUMN_NAME = "name";
         public final static String COLUMN_DATE = "date";
 
-        public static final int TYPE_INNER = 0;         //внутренняя операция
+        public static final int TYPE_TRANSLATION = 0;   //перевод в другой кошелек
         public static final int TYPE_EXTERNAL = 1;      //внешняя операция
-        public static final int TYPE_TRANSLATION = 2;   //перевод
+        public static final int TYPE_INNER = 2;         //внутренняя операция в резерв или обратно
+
     }
 }
