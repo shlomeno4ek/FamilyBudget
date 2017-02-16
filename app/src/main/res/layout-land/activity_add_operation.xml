@@ -17,28 +17,29 @@
         android:layout_height="match_parent">
 
         <LinearLayout
+            android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
+            tools:ignore="UselessParent"
             android:weightSum="1">
 
             <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="wrap_content">
 
                 <TextView
                     android:text="@string/addOperation"
                     android:textSize="24sp"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:id="@+id/textView4"
-                    android:layout_weight="0.36" />
+                    android:layout_weight="1" />
 
                 <TextView
                     android:text="@string/tvNamePurse"
                     android:textSize="22sp"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:id="@+id/tvNamePurse"
                     android:layout_alignParentTop="true"
@@ -50,76 +51,92 @@
             <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:weightSum="1">
 
                 <TextView
                     android:text="@string/summOperation"
                     android:textSize="20sp"
+                    android:layout_width="108dp"
                     android:layout_height="wrap_content"
                     android:id="@+id/tvSumm"
-                    android:layout_weight="0.99"
-                    android:layout_width="197dp" />
+                    android:layout_weight="0.86" />
 
                 <EditText
-                    android:layout_width="339dp"
+                    android:layout_width="177dp"
                     android:layout_height="wrap_content"
                     android:inputType="numberDecimal"
                     android:ems="10"
                     android:id="@+id/etSumm"
                     android:hint="@string/inputSummOperation" />
 
+                <RadioGroup
+                    android:layout_width="183dp"
+                    android:id="@+id/radio_group_type"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal"
+                    android:weightSum="1">
+
+                    <RadioButton
+                        android:text="@string/income"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:id="@+id/rbIncome"
+                        android:layout_weight="0.80" />
+
+                    <RadioButton
+                        android:text="@string/expenses"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/rbExpenses" />
+                </RadioGroup>
+
             </LinearLayout>
 
             <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="wrap_content">
 
                 <TextView
                     android:text="@string/tvDate"
                     android:textSize="20sp"
-                    android:layout_width="197dp"
+                    android:layout_width="188dp"
                     android:layout_height="wrap_content"
                     android:id="@+id/tvDate"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Display1"
-                    android:layout_weight="0.07" />
+                    android:textAppearance="@style/TextAppearance.AppCompat.Display1" />
 
                 <TextView
                     android:text="@string/inputDateOperation"
-                    android:layout_width="0dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:id="@+id/tvInputDate"
-                    android:layout_weight="0.98"
                     android:paddingTop="10dp"
-                    android:textSize="20sp"
-                    android:textColor="@color/colorText"/>
+                    android:textSize="20sp"/>
 
             </LinearLayout>
 
             <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="wrap_content">
 
                 <TextView
                     android:text="@string/nameOperation"
                     android:textSize="20sp"
-                    android:layout_width="197dp"
+                    android:layout_width="188dp"
                     android:layout_height="wrap_content"
                     android:id="@+id/tvNameOperation"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Display1"
-                    android:layout_weight="0.07" />
+                    android:textAppearance="@style/TextAppearance.AppCompat.Display1" />
 
                 <EditText
-                    android:layout_width="0dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="textPersonName"
                     android:ems="10"
                     android:id="@+id/etName"
                     android:hint="@string/inputNameOperation"
-                    android:layout_weight="1.00" />
-
+                    android:layout_weight="1" />
             </LinearLayout>
 
             <TextView
@@ -133,44 +150,49 @@
             <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="wrap_content"
+                android:weightSum="1">
 
                 <RadioGroup
-                    android:layout_width="247dp"
-                    android:layout_height="match_parent">
+                    android:layout_width="249dp"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/radio_group_view">
 
                     <RadioButton
                     android:id="@+id/radio_external"
                     android:text="@string/radioBattonExternal"
-                    android:layout_width="wrap_content"
+                    android:layout_width="162dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="24dp"
-                        tools:ignore="RtlHardcoded"
-                        android:checked="false"
-                        android:duplicateParentState="false" />
+                    android:layout_marginLeft="24dp" />
+
+                    <RadioButton
+                        android:id="@+id/radio_inInner"
+                        android:text="@string/radioBattonInInner"
+                        android:layout_width="184dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="24dp" />
+
+                    <RadioButton
+                        android:id="@+id/radio_outInner"
+                        android:text="@string/radioBattonOutInner"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="24dp" />
 
                     <RadioButton
                     android:id="@+id/radio_translation"
                     android:text="@string/radioBattonTranslation"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="24dp"
-                        tools:ignore="RtlHardcoded" />
-
-                    <RadioButton
-                        android:id="@+id/radio_inner"
-                        android:text="@string/radioBattonInner"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="24dp"
-                        tools:ignore="RtlHardcoded" />
+                    android:layout_marginLeft="24dp" />
 
                 </RadioGroup>
 
                 <LinearLayout
                     android:orientation="vertical"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+                    android:layout_height="match_parent"
+                    android:weightSum="1">
 
                     <LinearLayout
                         android:orientation="horizontal"
@@ -179,22 +201,24 @@
 
                         <CheckBox
                             android:text="@string/putInReserve"
-                            android:layout_width="match_parent"
+                            android:layout_width="175dp"
                             android:layout_height="wrap_content"
-                            android:id="@+id/checkBoxPutInReserve"
-                            android:layout_weight="1" />
+                            android:id="@+id/checkBoxPutInReserve" />
 
                         <Spinner
-                            android:layout_width="match_parent"
+                            android:layout_width="92dp"
                             android:layout_height="wrap_content"
                             android:id="@+id/spinnerProcentReserve"
-                            android:layout_weight="1" />
+                            android:entries="@array/procent" />
+
                     </LinearLayout>
 
                     <Spinner
                         android:layout_width="match_parent"
-                        android:layout_height="37dp"
-                        android:id="@+id/spinnerNamePurse" />
+                        android:layout_height="wrap_content"
+                        android:id="@+id/spinnerNamePurse"
+                        android:layout_weight="0.75"
+                        android:entries="@array/procent"/>
 
                     <Button
                         android:text="@string/btnOk"
