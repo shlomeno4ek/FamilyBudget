@@ -2,10 +2,13 @@ package ru.shlomeno4ek.familybudget;
 
 import android.app.DatePickerDialog;
 import android.app.Dialog;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -18,6 +21,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.Calendar;
+
+import ru.shlomeno4ek.familybudget.data.BudgetDbHelper;
+
+import static ru.shlomeno4ek.familybudget.MainActivity.LOG_TAG;
 
 public class OperationActivity extends AppCompatActivity {
 
@@ -110,19 +117,19 @@ public class OperationActivity extends AppCompatActivity {
                     String date = _tvInputDate.getText().toString();
                     String name = _etName.getText().toString();
 
-                    int summReserve = 0;
-
                     //Получаем id переключателя
                     int type = _radio_group.getCheckedRadioButtonId();
-                    System.out.println("type = " + type);
+
                     switch (type) {
                         case R.id.radio_external:
+                            int summReserve = 0;
                             CheckBox _checkBoxPutInReserve = (CheckBox) findViewById(R.id.checkBoxPutInReserve);
+
                             if (_checkBoxPutInReserve.isChecked()) {
                                 summReserve += summ/100*Integer.parseInt(_spinnerProcentReserve.getSelectedItem().toString());
-                                System.out.println("spinner = "+_spinnerProcentReserve.getSelectedItem().toString());
-                                Toast.makeText(context, "тип 0 спинет id - " + _spinnerProcentReserve.getSelectedItemId(), Toast.LENGTH_LONG).show();
                             }
+                            putInBdTableBudget(1,summ, name, date);
+
                             break;
                         case R.id.radio_inner:
 
@@ -191,4 +198,57 @@ public class OperationActivity extends AppCompatActivity {
             _tvInputDate.setText(myDay + "." + ++myMonth + "." + myYear);
         }
     };
+
+    private void putInBdTableBudget(int type, double summ, String name, String date) {
+        // создаем объект для создания и управления версиями БД
+        BudgetDbHelper dbHelper = new BudgetDbHelper(this);
+
+        // подключаемся к БД
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+
+        // создаем объект для данных
+        ContentValues cv = new ContentValues();
+
+//        // получаем данные из полей ввода
+//        String name = etAddNewPurse.getText().toString();
+
+        // подготовим данные для вставки в виде пар: наименование столбца - значение
+
+        cv.put("idPurse", idPurse);
+        cv.put("type", type);
+        cv.put("summ", summ);
+        cv.put("name", name);
+        cv.put("date", date);
+
+        Log.d(LOG_TAG, "--- Insert in mytable: ---");
+        // вставляем запись и получаем ее ID
+        long rowID = db.insert("budget", null, cv);
+        Log.d(LOG_TAG, "row inserted, ID = " + rowID);
+
+        // закрываем подключение к БД
+        dbHelper.close();
+    }
+    private void putInBdTablePurse(double balans, double reserv) {
+        // создаем объект для создания и управления версиями БД
+        BudgetDbHelper dbHelper = new BudgetDbHelper(this);
+
+        // подключаемся к БД
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+
+        // создаем объект для данных
+        ContentValues cv = new ContentValues();
+
+        // подготовим данные для вставки в виде пар: наименование столбца - значение
+        cv.put("idPurse", idPurse);
+        cv.put("balans", balans);
+        cv.put("reserv", reserv);
+
+        Log.d(LOG_TAG, "--- Insert in mytable: ---");
+        // вставляем запись и получаем ее ID
+//        long rowID = db.insert("purse", null, cv);
+//        Log.d(LOG_TAG, "row inserted, ID = " + rowID);
+
+        // закрываем подключение к БД
+        dbHelper.close();
+    }
 }
