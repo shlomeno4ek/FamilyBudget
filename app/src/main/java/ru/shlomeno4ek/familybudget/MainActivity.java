@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -14,6 +15,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import ru.shlomeno4ek.familybudget.data.BudgetDbHelper;
 import ru.shlomeno4ek.familybudget.data.FamilyBudget;
@@ -27,6 +29,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView _tvMainActBalansAll;
     private TextView _tvMainActReserveAll;
     private ArrayList<Integer> _idAndNamePurses;
+    private HashMap<Integer, Integer> idAndNamePurse;
     private double balansAll;
     private double reserveAll;
 
@@ -59,8 +62,9 @@ public class MainActivity extends AppCompatActivity {
         _lvMain.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(MainActivity.this, ViewPurseActivity.class);
-
-                intent.putExtra("position",""+_idAndNamePurses.get(position));
+                Integer a = idAndNamePurse.get(position);
+                intent.putExtra("id",""+a);
+//                intent.putExtra("id",""+_idAndNamePurses.get(position));
                 startActivity(intent);
             }
         });
@@ -93,6 +97,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private String[] displayDatabaseInfo() {
+        balansAll = 0;
+        reserveAll = 0;
+        idAndNamePurse = new HashMap<>();
+        int i = 0;
         // Создадим и откроем для чтения базу данных
         SQLiteDatabase db = _mDbHelper.getReadableDatabase();
         //Массив с названиями для ListView
@@ -153,6 +161,9 @@ public class MainActivity extends AppCompatActivity {
 
                 //Добавляем в map пару ID - NAME
                 _idAndNamePurses.add(currentID);
+                idAndNamePurse.put(i,currentID);
+                Log.w("SQLite", "читаем из базы id = " + currentID + " имя: " + currentName);
+                i++;
 
             }
         } finally {
@@ -164,7 +175,7 @@ public class MainActivity extends AppCompatActivity {
             pursesInfo = new String[allPurses.size()];
             pursesInfo = allPurses.toArray(pursesInfo);
             _tvMainActBalansAll.setText("Общий баланс: "+balansAll+" руб.");
-            _tvMainActReserveAll.setText("В резерве: "+balansAll+" руб.");
+            _tvMainActReserveAll.setText("В резерве: "+reserveAll+" руб.");
         } else {
             _tvMainActBalansAll.setText("У вас пока не создано ни одного кошелька, дабавьте его через пункт меню");
             _tvMainActReserveAll.setText("");
