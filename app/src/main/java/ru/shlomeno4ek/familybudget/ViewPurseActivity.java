@@ -219,7 +219,7 @@ public class ViewPurseActivity extends AppCompatActivity {
                 String currentName = cursorPurse.getString(nameColumnIndexBudget);
                 String currentDATE = cursorPurse.getString(dateColumnIndexBudget);
                 // Выводим значения каждого столбца
-                allPurses.add(currentTYPE == 1 ? "-"+currentSUMM : currentSUMM + " currentName " + currentDATE);
+                allPurses.add(currentSUMM + " " +currentName+" " + currentDATE);
             }
         } finally {
             // Всегда закрываем курсор после чтения
