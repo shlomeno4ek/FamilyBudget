@@ -5,6 +5,7 @@ import android.app.Dialog;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -23,6 +24,7 @@ import android.widget.Toast;
 import java.util.Calendar;
 
 import ru.shlomeno4ek.familybudget.data.BudgetDbHelper;
+import ru.shlomeno4ek.familybudget.data.FamilyBudget;
 
 import static ru.shlomeno4ek.familybudget.MainActivity.LOG_TAG;
 
@@ -37,10 +39,13 @@ public class OperationActivity extends AppCompatActivity {
     private Spinner _spinnerNamePurse;
     private Spinner _spinnerProcentReserve;
     private Button _btnAccept;
-    private RadioGroup _radio_group;
+    private RadioGroup _radio_group_view;
+    private RadioGroup _radio_group_type;
     private RadioButton _radio_inner;
     private RadioButton _radio_external;
     private RadioButton _radio_translation;
+    private RadioButton _rbIncome;
+    private RadioButton _rbExpenses;
     private CheckBox _checkBoxPutInReserve;
 
     final Calendar c = Calendar.getInstance();
@@ -49,12 +54,17 @@ public class OperationActivity extends AppCompatActivity {
     int myMonth = c.get(Calendar.MONTH);
     int myDay = c.get(Calendar.DAY_OF_MONTH);
 
+
+    BudgetDbHelper dbHelper;
     Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_operation);
+
+        // создаем объект для создания и управления версиями БД
+        dbHelper = new BudgetDbHelper(this);
 
         Intent intent = getIntent();
         idPurse = intent.getStringExtra("id");
@@ -91,9 +101,10 @@ public class OperationActivity extends AppCompatActivity {
         });
 
 
-        _radio_group = (RadioGroup) findViewById(R.id.radio_group);
+        _radio_group_view = (RadioGroup) findViewById(R.id.radio_group_view);
+        _radio_group_type = (RadioGroup) findViewById(R.id.radio_group_type);
 
-        _radio_inner = (RadioButton) findViewById(R.id.radio_inner);
+        _radio_inner = (RadioButton) findViewById(R.id.radio_inInner);
         _radio_inner.setOnClickListener(radioButtonClickListener);
 
         _radio_external = (RadioButton) findViewById(R.id.radio_external);
@@ -101,6 +112,9 @@ public class OperationActivity extends AppCompatActivity {
 
         _radio_translation = (RadioButton) findViewById(R.id.radio_translation);
         _radio_translation.setOnClickListener(radioButtonClickListener);
+
+        _rbIncome = (RadioButton) findViewById(R.id.rbIncome);
+        _rbExpenses = (RadioButton) findViewById(R.id.rbExpenses);
 
         context = OperationActivity.this;
 
@@ -110,17 +124,19 @@ public class OperationActivity extends AppCompatActivity {
             public void onClick(View v) {
              try {
 
-                if (_etSumm.getText().toString()==null || _etName.getText().toString().equals("") || !(_radio_external.isChecked() || _radio_inner.isChecked() || _radio_translation.isChecked())) {
+                if (_etSumm.getText().toString()==null || _etName.getText().toString().equals("") || !(_radio_external.isChecked() || _radio_inner.isChecked() || _radio_translation.isChecked()) ||!(_rbIncome.isChecked() || _rbExpenses.isChecked())) {
                     Toast.makeText(context, "Не все поля заполнены", Toast.LENGTH_LONG).show();
                 } else {
                     double summ = Double.parseDouble(_etSumm.getText().toString());
                     String date = _tvInputDate.getText().toString();
                     String name = _etName.getText().toString();
+                    int type = 1;
+                    if (_rbExpenses.isChecked()) type*=-1;
 
                     //Получаем id переключателя
-                    int type = _radio_group.getCheckedRadioButtonId();
+                    int viewOperations = _radio_group_view.getCheckedRadioButtonId();
 
-                    switch (type) {
+                    switch (viewOperations) {
                         case R.id.radio_external:
                             int summReserve = 0;
                             CheckBox _checkBoxPutInReserve = (CheckBox) findViewById(R.id.checkBoxPutInReserve);
@@ -128,15 +144,51 @@ public class OperationActivity extends AppCompatActivity {
                             if (_checkBoxPutInReserve.isChecked()) {
                                 summReserve += summ/100*Integer.parseInt(_spinnerProcentReserve.getSelectedItem().toString());
                             }
-                            putInBdTableBudget(1,summ, name, date);
+
+                            putInBdTableBudget(FamilyBudget.BudgetEntry.TYPE_EXTERNAL,summ*type, name, date);
+                            putInBdTableBudget(FamilyBudget.BudgetEntry.TYPE_EXTERNAL,summ*type, name+7, date);
+
+                            if (summReserve>0) {
+                                putInBdTableBudget(FamilyBudget.BudgetEntry.TYPE_INNER,summReserve, "В резерв из: " + name, date);
+                            }
+
+                            //Получаем баланс и резерв кошелька
+                            String query = "SELECT " + FamilyBudget.PurseEntry.COLUMN_BALANS + ", "
+                                    + FamilyBudget.PurseEntry.COLUMN_RESERVE + " FROM " + FamilyBudget.PurseEntry.TABLE_NAME + " WHERE _id = " + idPurse;
+
+                            // подключаемся к БД
+                            SQLiteDatabase db = dbHelper.getWritableDatabase();
+                            double balans = 0;
+                            double reserv = 0;
+                            Cursor cursor2 = db.rawQuery(query, null);
+                            while (cursor2.moveToNext()) {
+                                balans = cursor2.getDouble(cursor2
+                                        .getColumnIndex(FamilyBudget.PurseEntry.COLUMN_BALANS));
+                                reserv = cursor2.getDouble(cursor2
+                                        .getColumnIndex(FamilyBudget.PurseEntry.COLUMN_RESERVE));
+                                Log.i("LOG_TAG", "ROW " + idPurse + " HAS BALANS " + balans + " AND RESERV " + reserv);
+                            }
+                            cursor2.close();
+                            balans += summ*type;
+                            reserv += summReserve;
+
+                            ContentValues values = new ContentValues();
+                            values.put(FamilyBudget.PurseEntry.COLUMN_BALANS, balans);
+                            values.put(FamilyBudget.PurseEntry.COLUMN_RESERVE, reserv);
+                            db.update(FamilyBudget.PurseEntry.TABLE_NAME, values, FamilyBudget.PurseEntry._ID + "= ?", new String[]{idPurse});
+
+                            db.close();
+                            finish();
+                            break;
+                        case R.id.radio_inInner:
 
                             break;
-                        case R.id.radio_inner:
+                        case R.id.radio_outInner:
 
                             break;
                         case R.id.radio_translation:
                             String NamePurseForTranslation = _spinnerNamePurse.getSelectedItem().toString();
-                            Toast.makeText(context, "тип 2 спинет id - " + _spinnerNamePurse.getSelectedItemId(), Toast.LENGTH_LONG).show();
+
                             break;
                     }
                 }
@@ -151,7 +203,7 @@ public class OperationActivity extends AppCompatActivity {
         public void onClick(View v) {
             RadioButton rb = (RadioButton)v;
             switch (rb.getId()) {
-                case R.id.radio_inner:
+                case R.id.radio_inInner:
                     _spinnerNamePurse.setEnabled(false);
                     _checkBoxPutInReserve.setEnabled(false);
                     _checkBoxPutInReserve.setChecked(false);
@@ -200,8 +252,8 @@ public class OperationActivity extends AppCompatActivity {
     };
 
     private void putInBdTableBudget(int type, double summ, String name, String date) {
-        // создаем объект для создания и управления версиями БД
-        BudgetDbHelper dbHelper = new BudgetDbHelper(this);
+//        // создаем объект для создания и управления версиями БД
+//        BudgetDbHelper dbHelper = new BudgetDbHelper(this);
 
         // подключаемся к БД
         SQLiteDatabase db = dbHelper.getWritableDatabase();
@@ -214,13 +266,13 @@ public class OperationActivity extends AppCompatActivity {
 
         // подготовим данные для вставки в виде пар: наименование столбца - значение
 
-        cv.put("idPurse", idPurse);
+        cv.put("idPurse", Integer.parseInt(idPurse));
         cv.put("type", type);
         cv.put("summ", summ);
         cv.put("name", name);
         cv.put("date", date);
 
-        Log.d(LOG_TAG, "--- Insert in mytable: ---");
+        Log.d(LOG_TAG, "--- Insert in table budget: ---");
         // вставляем запись и получаем ее ID
         long rowID = db.insert("budget", null, cv);
         Log.d(LOG_TAG, "row inserted, ID = " + rowID);
