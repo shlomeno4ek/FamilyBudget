@@ -127,7 +127,7 @@
             android:weightSum="1">
 
             <RadioGroup
-                android:layout_width="249dp"
+                android:layout_width="208dp"
                 android:layout_height="wrap_content"
                 android:id="@+id/radio_group_view">
 
@@ -136,43 +136,49 @@
                 android:text="@string/radioBattonExternal"
                 android:layout_width="162dp"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="24dp" />
+                android:layout_marginLeft="24dp"
+                    tools:ignore="RtlHardcoded" />
 
                 <RadioButton
                     android:id="@+id/radio_inInner"
                     android:text="@string/radioBattonInInner"
                     android:layout_width="184dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="24dp" />
+                    android:layout_marginLeft="24dp"
+                    tools:ignore="RtlHardcoded" />
 
                 <RadioButton
                     android:id="@+id/radio_outInner"
                     android:text="@string/radioBattonOutInner"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="24dp" />
+                    android:layout_marginLeft="24dp"
+                    tools:ignore="RtlHardcoded" />
 
                 <RadioButton
                 android:id="@+id/radio_translation"
                 android:text="@string/radioBattonTranslation"
-                android:layout_width="wrap_content"
+                android:layout_width="182dp"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="24dp" />
+                android:layout_marginLeft="24dp"
+                    tools:ignore="RtlHardcoded" />
 
             </RadioGroup>
 
             <LinearLayout
                 android:orientation="vertical"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:weightSum="1">
+                android:weightSum="1"
+                android:layout_weight="0.96">
 
                 <CheckBox
                     android:text="@string/putInReserve"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="0dp"
                     android:id="@+id/checkBoxPutInReserve"
-                    android:layout_weight="0.83" />
+                    android:layout_weight="0.61"
+                    tools:ignore="NestedWeights" />
 
                 <Spinner
                     android:layout_width="95dp"
