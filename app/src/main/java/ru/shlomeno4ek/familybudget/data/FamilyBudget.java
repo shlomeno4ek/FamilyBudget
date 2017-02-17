@@ -11,6 +11,7 @@ public final class FamilyBudget {
     private FamilyBudget() {
     };
 
+    //Столбцы таблицы Purse
     public static final class PurseEntry implements BaseColumns {
         public final static String TABLE_NAME = "purse";
 
@@ -21,6 +22,7 @@ public final class FamilyBudget {
         public final static String COLUMN_RESERVE = "reserve";
     }
 
+    //Столбцы таблицы Budget
     public static final class BudgetEntry implements BaseColumns {
         public final static String TABLE_NAME = "budget";
 

@@ -38,7 +38,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
+        //Получаем массив из Нзавания кошелька и его баланса
         String[] temp = displayDatabaseInfo();
+        //Если массив не NULL то создаем и подключаем адптер для ListView, иначе очищаем ListView
         if (temp != null) {
             ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, displayDatabaseInfo());
             _lvMain.setAdapter(adapter);
@@ -53,16 +55,20 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // создаем объект для создания и управления версиями БД
         _mDbHelper = new BudgetDbHelper(this);
 
+        //Получаем елементы Activity
         _tvMainActBalansAll = (TextView) findViewById(R.id.tvMainActBalansAll);
         _tvMainActReserveAll = (TextView) findViewById(R.id.tvMainActReserveAll);
         _lvMain = (ListView) findViewById(R.id.lvMain);
 
+        //Добавляем действие на щелчок по элементу ListView
         _lvMain.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(MainActivity.this, ViewPurseActivity.class);
                 Integer a = idAndNamePurse.get(position);
+                //Передаем в интент id для ViewPurseActivity
                 intent.putExtra("id",""+a);
 //                intent.putExtra("id",""+_idAndNamePurses.get(position));
                 startActivity(intent);
@@ -70,12 +76,14 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    //Создание меню для Activity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
 
+    //Действия для каждого из пункта меню
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
@@ -85,6 +93,7 @@ public class MainActivity extends AppCompatActivity {
         // Операции для выбранного пункта меню
         switch (id) {
             case R.id.action_add_purse:
+                //Если выбрано добавление кошелька
                 Intent intent = new Intent(MainActivity.this, AddPurseActivity.class);
                 startActivity(intent);
                 return true;
@@ -96,10 +105,11 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    //Получаем информацию о всех кошельках и возвращаем в виде String[]
     private String[] displayDatabaseInfo() {
         balansAll = 0;
         reserveAll = 0;
-        idAndNamePurse = new HashMap<>();
+        idAndNamePurse = new HashMap<Integer, Integer>();
         int i = 0;
         // Создадим и откроем для чтения базу данных
         SQLiteDatabase db = _mDbHelper.getReadableDatabase();
@@ -114,13 +124,13 @@ public class MainActivity extends AppCompatActivity {
                 FamilyBudget.PurseEntry.COLUMN_BALANS,
                 FamilyBudget.PurseEntry.COLUMN_RESERVE};
 
-        String[] projectionOnBudget = {
-                FamilyBudget.BudgetEntry._ID,
-                FamilyBudget.BudgetEntry.COLUMN_IDPURSE,
-                FamilyBudget.BudgetEntry.COLUMN_TYPE,
-                FamilyBudget.BudgetEntry.COLUMN_SUMM,
-                FamilyBudget.BudgetEntry.COLUMN_NAME,
-                FamilyBudget.BudgetEntry.COLUMN_DATE};
+//        String[] projectionOnBudget = {
+//                FamilyBudget.BudgetEntry._ID,
+//                FamilyBudget.BudgetEntry.COLUMN_IDPURSE,
+//                FamilyBudget.BudgetEntry.COLUMN_TYPE,
+//                FamilyBudget.BudgetEntry.COLUMN_SUMM,
+//                FamilyBudget.BudgetEntry.COLUMN_NAME,
+//                FamilyBudget.BudgetEntry.COLUMN_DATE};
 
         // Делаем запрос
         Cursor cursor = db.query(
@@ -134,7 +144,7 @@ public class MainActivity extends AppCompatActivity {
 
         ArrayList<String> allPurses = new ArrayList<>();
 
-        _idAndNamePurses = new ArrayList<Integer>();
+//        _idAndNamePurses = new ArrayList<Integer>();
 
         try {
             // Узнаем индекс каждого столбца
@@ -154,28 +164,27 @@ public class MainActivity extends AppCompatActivity {
                 Double currentReserve = cursor.getDouble(reserveColumnIndex);
 
                 // Выводим значения каждого столбца
-                allPurses.add(currentName + "\nБаланс: " + currentBalans + ", Резерв: " + currentReserve);
+                allPurses.add(currentName + "\nБаланс: " + currentBalans + "\nНа трату:  " + (currentBalans-currentReserve) + "\nРезерв: " + currentReserve);
 
                 balansAll+=currentBalans;
                 reserveAll+=currentReserve;
 
-                //Добавляем в map пару ID - NAME
-                _idAndNamePurses.add(currentID);
+                //Добавляем в map пару i - ID
+//                _idAndNamePurses.add(currentID);
                 idAndNamePurse.put(i,currentID);
-                Log.w("SQLite", "читаем из базы id = " + currentID + " имя: " + currentName);
+                Log.d(LOG_TAG, "читаем из базы id = " + currentID + " имя: " + currentName + " и вставляем в HashMap с ключом: " + i);
                 i++;
-
             }
         } finally {
             // Всегда закрываем курсор после чтения
             cursor.close();
         }
-
+        //Проверка на количество кошельков, если их не то возвращаем NULL
         if (allPurses.size()>0) {
             pursesInfo = new String[allPurses.size()];
             pursesInfo = allPurses.toArray(pursesInfo);
             _tvMainActBalansAll.setText("Общий баланс: "+balansAll+" руб.");
-            _tvMainActReserveAll.setText("В резерве: "+reserveAll+" руб.");
+            _tvMainActReserveAll.setText("В резерве: "+reserveAll+" руб.\nНа трату: " + (balansAll-reserveAll) + " руб.");
         } else {
             _tvMainActBalansAll.setText("У вас пока не создано ни одного кошелька, дабавьте его через пункт меню");
             _tvMainActReserveAll.setText("");

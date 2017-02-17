@@ -54,7 +54,6 @@ public class OperationActivity extends AppCompatActivity {
     int myMonth = c.get(Calendar.MONTH);
     int myDay = c.get(Calendar.DAY_OF_MONTH);
 
-
     BudgetDbHelper dbHelper;
     Context context;
 
@@ -66,15 +65,17 @@ public class OperationActivity extends AppCompatActivity {
         // создаем объект для создания и управления версиями БД
         dbHelper = new BudgetDbHelper(this);
 
+        //Получаем параменты, переданные в Intent
         Intent intent = getIntent();
         idPurse = intent.getStringExtra("id");
 
+        //Получаем елементы Activity
         _etSumm = (EditText) findViewById(R.id.etSumm);
         _etName = (EditText) findViewById(R.id.etName);
-
         _tvNamePurse = (TextView) findViewById(R.id.tvNamePurse);
         _tvNamePurse.setText(intent.getStringExtra("namePurse"));
 
+        //Делаем TextView кликабельной и задаем действие на нее
         _tvInputDate = (TextView) findViewById(R.id.tvInputDate);
         _tvInputDate.setClickable(true);
         _tvInputDate.setText(myDay + "." + ++myMonth + "." + myYear);
@@ -87,7 +88,6 @@ public class OperationActivity extends AppCompatActivity {
 
         _spinnerNamePurse = (Spinner) findViewById(R.id.spinnerNamePurse);
         _spinnerNamePurse.setEnabled(false);
-
         _spinnerProcentReserve = (Spinner) findViewById(R.id.spinnerProcentReserve);
         _spinnerProcentReserve.setEnabled(false);
 
@@ -99,7 +99,6 @@ public class OperationActivity extends AppCompatActivity {
                 if(_checkBoxPutInReserve.isChecked()) {_spinnerProcentReserve.setEnabled(true);} else {_spinnerProcentReserve.setEnabled(false);}
             }
         });
-
 
         _radio_group_view = (RadioGroup) findViewById(R.id.radio_group_view);
         _radio_group_type = (RadioGroup) findViewById(R.id.radio_group_type);
@@ -118,6 +117,7 @@ public class OperationActivity extends AppCompatActivity {
 
         context = OperationActivity.this;
 
+        //Получаем кнопку Сохранить и обрабатываем нажатие
         _btnAccept = (Button) findViewById(R.id.btnAccept);
         _btnAccept.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -127,65 +127,82 @@ public class OperationActivity extends AppCompatActivity {
                 if (_etSumm.getText().toString()==null || _etName.getText().toString().equals("") || !(_radio_external.isChecked() || _radio_inner.isChecked() || _radio_translation.isChecked()) ||!(_rbIncome.isChecked() || _rbExpenses.isChecked())) {
                     Toast.makeText(context, "Не все поля заполнены", Toast.LENGTH_LONG).show();
                 } else {
+                    //Получаем значения из полей Activity
                     double summ = Double.parseDouble(_etSumm.getText().toString());
                     String date = _tvInputDate.getText().toString();
                     String name = _etName.getText().toString();
+
+                    //Определяем тип операции + или -
                     int type = 1;
                     if (_rbExpenses.isChecked()) type*=-1;
 
-                    //Получаем id переключателя
+                    //Получаем id переключателя и проверяем какой выбран и производим соответственное действие
                     int viewOperations = _radio_group_view.getCheckedRadioButtonId();
-
                     switch (viewOperations) {
+                        //Внешняя операция
                         case R.id.radio_external:
-                            int summReserve = 0;
-                            CheckBox _checkBoxPutInReserve = (CheckBox) findViewById(R.id.checkBoxPutInReserve);
+                            double summReserve = 0;
+                            double balans = 0;
+                            double reserv = 0;
 
+                            //Если CHeckBox включен - получаем значение SpinnerProcent
                             if (_checkBoxPutInReserve.isChecked()) {
                                 summReserve += summ/100*Integer.parseInt(_spinnerProcentReserve.getSelectedItem().toString());
                             }
 
+                            //Записываем в базу Budget внешнюю операцию
                             putInBdTableBudget(FamilyBudget.BudgetEntry.TYPE_EXTERNAL,summ*type, name, date);
-                            putInBdTableBudget(FamilyBudget.BudgetEntry.TYPE_EXTERNAL,summ*type, name+7, date);
 
+                            //Если был включен резерв, то нужно его тоже внести в операции
                             if (summReserve>0) {
                                 putInBdTableBudget(FamilyBudget.BudgetEntry.TYPE_INNER,summReserve, "В резерв из: " + name, date);
                             }
 
                             //Получаем баланс и резерв кошелька
                             String query = "SELECT " + FamilyBudget.PurseEntry.COLUMN_BALANS + ", "
-                                    + FamilyBudget.PurseEntry.COLUMN_RESERVE + " FROM " + FamilyBudget.PurseEntry.TABLE_NAME + " WHERE _id = " + idPurse;
+                                    + FamilyBudget.PurseEntry.COLUMN_RESERVE
+                                    + " FROM " + FamilyBudget.PurseEntry.TABLE_NAME
+                                    + " WHERE _id = " + idPurse;
 
                             // подключаемся к БД
                             SQLiteDatabase db = dbHelper.getWritableDatabase();
-                            double balans = 0;
-                            double reserv = 0;
+                            //Получаем курсор по кошельку где ID = idPurse
                             Cursor cursor2 = db.rawQuery(query, null);
                             while (cursor2.moveToNext()) {
                                 balans = cursor2.getDouble(cursor2
                                         .getColumnIndex(FamilyBudget.PurseEntry.COLUMN_BALANS));
                                 reserv = cursor2.getDouble(cursor2
                                         .getColumnIndex(FamilyBudget.PurseEntry.COLUMN_RESERVE));
-                                Log.i("LOG_TAG", "ROW " + idPurse + " HAS BALANS " + balans + " AND RESERV " + reserv);
+                                Log.d(LOG_TAG, "--- Query in purse balans and reserv: ---");
                             }
+
                             cursor2.close();
                             balans += summ*type;
                             reserv += summReserve;
 
+                            //Контейнер для обновленных значений
                             ContentValues values = new ContentValues();
                             values.put(FamilyBudget.PurseEntry.COLUMN_BALANS, balans);
                             values.put(FamilyBudget.PurseEntry.COLUMN_RESERVE, reserv);
-                            db.update(FamilyBudget.PurseEntry.TABLE_NAME, values, FamilyBudget.PurseEntry._ID + "= ?", new String[]{idPurse});
+                            // обновляем запись и получаем ее ID
+                            long rowID = db.update(FamilyBudget.PurseEntry.TABLE_NAME, values, FamilyBudget.PurseEntry._ID + "= ?", new String[]{idPurse});
+                            Log.d(LOG_TAG, "--- Update in purse balans and reserv: ID = " + rowID);
 
                             db.close();
                             finish();
                             break;
+
+                        //Операция перевода в резерв
                         case R.id.radio_inInner:
 
                             break;
+
+                        //Операция перевода из резерва
                         case R.id.radio_outInner:
 
                             break;
+
+                        //Операция перевода в другой кошелек
                         case R.id.radio_translation:
                             String NamePurseForTranslation = _spinnerNamePurse.getSelectedItem().toString();
 
@@ -203,34 +220,54 @@ public class OperationActivity extends AppCompatActivity {
         public void onClick(View v) {
             RadioButton rb = (RadioButton)v;
             switch (rb.getId()) {
+
+                //Перевод в резерв
                 case R.id.radio_inInner:
                     _spinnerNamePurse.setEnabled(false);
                     _checkBoxPutInReserve.setEnabled(false);
                     _checkBoxPutInReserve.setChecked(false);
                     _spinnerProcentReserve.setEnabled(false);
-
+                    _rbIncome.setChecked(true);
+                    _rbExpenses.setChecked(false);
                     break;
+
+                //Перевод из резерва
+                case R.id.radio_outInner:
+                    _spinnerNamePurse.setEnabled(false);
+                    _checkBoxPutInReserve.setEnabled(false);
+                    _checkBoxPutInReserve.setChecked(false);
+                    _spinnerProcentReserve.setEnabled(false);
+                    _rbIncome.setChecked(false);
+                    _rbExpenses.setChecked(true);
+                    break;
+
+                //Внешняя оперция
                 case R.id.radio_external:
                     _spinnerNamePurse.setEnabled(false);
                     _checkBoxPutInReserve.setEnabled(true);
                     _spinnerProcentReserve.setEnabled(false);
+                    _rbIncome.setChecked(false);
+                    _rbExpenses.setChecked(false);
                     break;
+
+                //Перевод в другой кошелек
                 case R.id.radio_translation:
                     _spinnerNamePurse.setEnabled(true);
                     _checkBoxPutInReserve.setEnabled(false);
                     _checkBoxPutInReserve.setChecked(false);
                     _spinnerProcentReserve.setEnabled(false);
                     break;
+
                 default:
                     break;
             }
         }
     };
 
+    //Диалог для выбора даты
     public void onclickDate() {
         showDialog(DIALOG_DATE);
     }
-
 
     protected Dialog onCreateDialog(int id) {
         if (id == DIALOG_DATE) {
@@ -251,6 +288,7 @@ public class OperationActivity extends AppCompatActivity {
         }
     };
 
+    //Метод записывает в базу Budget новые операции
     private void putInBdTableBudget(int type, double summ, String name, String date) {
 //        // создаем объект для создания и управления версиями БД
 //        BudgetDbHelper dbHelper = new BudgetDbHelper(this);
@@ -280,27 +318,27 @@ public class OperationActivity extends AppCompatActivity {
         // закрываем подключение к БД
         dbHelper.close();
     }
-    private void putInBdTablePurse(double balans, double reserv) {
-        // создаем объект для создания и управления версиями БД
-        BudgetDbHelper dbHelper = new BudgetDbHelper(this);
-
-        // подключаемся к БД
-        SQLiteDatabase db = dbHelper.getWritableDatabase();
-
-        // создаем объект для данных
-        ContentValues cv = new ContentValues();
-
-        // подготовим данные для вставки в виде пар: наименование столбца - значение
-        cv.put("idPurse", idPurse);
-        cv.put("balans", balans);
-        cv.put("reserv", reserv);
-
-        Log.d(LOG_TAG, "--- Insert in mytable: ---");
-        // вставляем запись и получаем ее ID
-//        long rowID = db.insert("purse", null, cv);
-//        Log.d(LOG_TAG, "row inserted, ID = " + rowID);
-
-        // закрываем подключение к БД
-        dbHelper.close();
-    }
+//    private void putInBdTablePurse(double balans, double reserv) {
+//        // создаем объект для создания и управления версиями БД
+//        BudgetDbHelper dbHelper = new BudgetDbHelper(this);
+//
+//        // подключаемся к БД
+//        SQLiteDatabase db = dbHelper.getWritableDatabase();
+//
+//        // создаем объект для данных
+//        ContentValues cv = new ContentValues();
+//
+//        // подготовим данные для вставки в виде пар: наименование столбца - значение
+//        cv.put("idPurse", idPurse);
+//        cv.put("balans", balans);
+//        cv.put("reserv", reserv);
+//
+//        Log.d(LOG_TAG, "--- Insert in mytable: ---");
+//        // вставляем запись и получаем ее ID
+////        long rowID = db.insert("purse", null, cv);
+////        Log.d(LOG_TAG, "row inserted, ID = " + rowID);
+//
+//        // закрываем подключение к БД
+//        dbHelper.close();
+//    }
 }

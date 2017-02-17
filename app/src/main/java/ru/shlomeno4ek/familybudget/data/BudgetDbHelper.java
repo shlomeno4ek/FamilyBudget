@@ -39,7 +39,7 @@ public class BudgetDbHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
 
-        // Строка для создания таблицы
+        // Строка для создания таблицы Purse
         String SQL_CREATE_PURSE_TABLE = "CREATE TABLE " + FamilyBudget.PurseEntry.TABLE_NAME + " ("
                 + FamilyBudget.PurseEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + FamilyBudget.PurseEntry.COLUMN_NAME + " TEXT NOT NULL, "
@@ -47,6 +47,7 @@ public class BudgetDbHelper extends SQLiteOpenHelper {
                 + FamilyBudget.PurseEntry.COLUMN_BALANS + " REAL NOT NULL DEFAULT 0, "
                 + FamilyBudget.PurseEntry.COLUMN_RESERVE + " REAL NOT NULL DEFAULT 0);";
 
+        // Строка для создания таблицы Budget
         String SQL_CREATE_BUDGET_TABLE = "CREATE TABLE " + FamilyBudget.BudgetEntry.TABLE_NAME + " ("
                 + FamilyBudget.BudgetEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + FamilyBudget.BudgetEntry.COLUMN_IDPURSE + " INTEGER NOT NULL, "

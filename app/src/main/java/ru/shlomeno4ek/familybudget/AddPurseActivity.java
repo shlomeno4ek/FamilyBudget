@@ -1,7 +1,6 @@
 package ru.shlomeno4ek.familybudget;
 
 import android.content.ContentValues;
-import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -24,8 +23,10 @@ public class AddPurseActivity extends AppCompatActivity implements View.OnClickL
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_purse);
 
+        //Получаем елементы Activity и устанавливаем кнопке слушателя
         btnOkAddNewPurse = (Button) findViewById(R.id.btnOkAddNewPurse);
         btnOkAddNewPurse.setOnClickListener(this);
+
         etAddNewPurse = (EditText) findViewById(R.id.etAddNewPurse);
 
     }
@@ -49,16 +50,17 @@ public class AddPurseActivity extends AppCompatActivity implements View.OnClickL
         if(!name.equals("")){
 
         cv.put("name", name);
-        cv.put("owner", "Сергей");
+        cv.put("owner", "Owner");
 
-        Log.d(LOG_TAG, "--- Insert in mytable: ---");
+        Log.d(LOG_TAG, "--- Insert in purse: ---");
         // вставляем запись и получаем ее ID
         long rowID = db.insert("purse", null, cv);
         Log.d(LOG_TAG, "row inserted, ID = " + rowID);
         }
-        finish();
 
         // закрываем подключение к БД
         dbHelper.close();
+        //закрываем Activity
+        finish();
     }
 }
