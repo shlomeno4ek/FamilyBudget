@@ -26,8 +26,8 @@
     <string name="inputSummOperation">введите сумму операции</string>
     <string name="btnOk">ок</string>
     <string name="putInReserve">Отложить % в резер</string>
-    <string name="income">Доход</string>
-    <string name="expenses">Расход</string>
+    <string name="income">Доход (+)</string>
+    <string name="expenses">Расход (-)</string>
 
     <string-array name="procent">
         <item>5</item>
