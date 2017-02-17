@@ -26,7 +26,7 @@ public class ViewPurseActivity extends AppCompatActivity {
 
     private TextView tvNamePurse;
     private ListView _lvOperationsPurse;
-    private String pursesInfo[];
+//    private String pursesInfo[];
     private String idPurse;
     private BudgetDbHelper _mDbHelper;
     private ImageButton _imageBtnAddOperation;
@@ -39,25 +39,29 @@ public class ViewPurseActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_purse);
 
+        //Получаем елементы Activity
+        tvNamePurse = (TextView) findViewById(R.id.tvNamePurse);
+        _lvOperationsPurse =(ListView) findViewById(R.id.lvOperationsPurse);
+
+        //Получаем параменты, переданные в Intent
         Intent intent = getIntent();
         idPurse = intent.getStringExtra("id");
 
+        // создаем объект для создания и управления версиями БД
         _mDbHelper = new BudgetDbHelper(this);
+
+        //Получаем кнопку добавления операции и устанавливаем на нее действие
         _imageBtnAddOperation = (ImageButton) findViewById(R.id.imageBtnAddOperation);
         _imageBtnAddOperation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(ViewPurseActivity.this, OperationActivity.class);
+                //Передаем в интент id  и namePurse для OperationActivity
                 intent.putExtra("id",idPurse);
                 intent.putExtra("namePurse",tvNamePurse.getText().toString().split("\n")[0]);
                 startActivity(intent);
             }
         });
-
-        tvNamePurse = (TextView) findViewById(R.id.tvNamePurse);
-        _lvOperationsPurse =(ListView) findViewById(R.id.lvOperationsPurse);
-
-
 
         //Подтверждение удаления кошелька
         context = ViewPurseActivity.this;
@@ -66,9 +70,12 @@ public class ViewPurseActivity extends AppCompatActivity {
         String button1String = "Да";
         String button2String = "Нет";
 
+        //Создание диалога для подтверждения
         ad = new AlertDialog.Builder(context);
         ad.setTitle(title);  // заголовок
         ad.setMessage(message); // сообщение
+
+        //Действия при нажатии подтверждения диалога
         ad.setPositiveButton(button1String, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int arg1) {
                 Toast.makeText(context, "Кошелек удален",
@@ -77,24 +84,28 @@ public class ViewPurseActivity extends AppCompatActivity {
                 // Создадим и откроем для чтения базу данных
                 SQLiteDatabase db = _mDbHelper.getReadableDatabase();
 
+                //Удаляем кошелек и все его операции
                 db.delete(FamilyBudget.PurseEntry.TABLE_NAME, FamilyBudget.PurseEntry._ID + "=" + idPurse, null);
                 db.delete(FamilyBudget.BudgetEntry.TABLE_NAME, FamilyBudget.BudgetEntry.COLUMN_IDPURSE + "=" + idPurse, null);
 
+                //Закрываем подключение к базе
                 db.close();
                 finish();
             }
         });
+
+        //Действия при нажатии отмены диалога
         ad.setNegativeButton(button2String, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int arg1) {
-                Toast.makeText(context, "Кошелек осталался цел", Toast.LENGTH_LONG)
-                        .show();
+                Toast.makeText(context, "Кошелек не удален", Toast.LENGTH_LONG).show();
             }
         });
+
+        //Действия при нажатии назад
         ad.setCancelable(true);
         ad.setOnCancelListener(new DialogInterface.OnCancelListener() {
             public void onCancel(DialogInterface dialog) {
-                Toast.makeText(context, "Кошелек осталался цел", Toast.LENGTH_LONG)
-                        .show();
+                Toast.makeText(context, "Кошелек не удален", Toast.LENGTH_LONG).show();
             }
         });
     }
