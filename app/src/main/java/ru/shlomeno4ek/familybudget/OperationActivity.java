@@ -11,6 +11,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.DatePicker;
@@ -21,6 +22,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 
 import ru.shlomeno4ek.familybudget.data.BudgetDbHelper;
@@ -41,7 +43,8 @@ public class OperationActivity extends AppCompatActivity {
     private Button _btnAccept;
     private RadioGroup _radio_group_view;
     private RadioGroup _radio_group_type;
-    private RadioButton _radio_inner;
+    private RadioButton _radio_inInner;
+    private RadioButton _radio_outInner;
     private RadioButton _radio_external;
     private RadioButton _radio_translation;
     private RadioButton _rbIncome;
@@ -88,6 +91,10 @@ public class OperationActivity extends AppCompatActivity {
 
         _spinnerNamePurse = (Spinner) findViewById(R.id.spinnerNamePurse);
         _spinnerNamePurse.setEnabled(false);
+
+        //Заполняем spinnerNamePurse Названиями кошельков
+        getNamePurses();
+
         _spinnerProcentReserve = (Spinner) findViewById(R.id.spinnerProcentReserve);
         _spinnerProcentReserve.setEnabled(false);
 
@@ -103,8 +110,11 @@ public class OperationActivity extends AppCompatActivity {
         _radio_group_view = (RadioGroup) findViewById(R.id.radio_group_view);
         _radio_group_type = (RadioGroup) findViewById(R.id.radio_group_type);
 
-        _radio_inner = (RadioButton) findViewById(R.id.radio_inInner);
-        _radio_inner.setOnClickListener(radioButtonClickListener);
+        _radio_inInner = (RadioButton) findViewById(R.id.radio_inInner);
+        _radio_inInner.setOnClickListener(radioButtonClickListener);
+
+        _radio_outInner = (RadioButton) findViewById(R.id.radio_outInner);
+        _radio_outInner.setOnClickListener(radioButtonClickListener);
 
         _radio_external = (RadioButton) findViewById(R.id.radio_external);
         _radio_external.setOnClickListener(radioButtonClickListener);
@@ -124,11 +134,12 @@ public class OperationActivity extends AppCompatActivity {
             public void onClick(View v) {
              try {
 
-                if (_etSumm.getText().toString()==null || _etName.getText().toString().equals("") || !(_radio_external.isChecked() || _radio_inner.isChecked() || _radio_translation.isChecked()) ||!(_rbIncome.isChecked() || _rbExpenses.isChecked())) {
+                if (_etSumm.getText().toString()==null || _etName.getText().toString().equals("") || !(_radio_external.isChecked() || _radio_inInner.isChecked() || _radio_translation.isChecked()) ||!(_rbIncome.isChecked() || _rbExpenses.isChecked())) {
                     Toast.makeText(context, "Не все поля заполнены", Toast.LENGTH_LONG).show();
                 } else {
                     //Получаем значения из полей Activity
                     double summ = Double.parseDouble(_etSumm.getText().toString());
+                    if (summ<0) summ*=-1;
                     String date = _tvInputDate.getText().toString();
                     String name = _etName.getText().toString();
 
@@ -195,16 +206,160 @@ public class OperationActivity extends AppCompatActivity {
                         //Операция перевода в резерв
                         case R.id.radio_inInner:
 
+                            summReserve = 0;
+                            reserv = 0;
+
+                            summReserve += summ;
+
+                            putInBdTableBudget(FamilyBudget.BudgetEntry.TYPE_INNER,summReserve, "В резерв " + _tvNamePurse.getText().toString() + ". " + name, date);
+
+                            //Получаем баланс и резерв кошелька
+                            query = "SELECT " + FamilyBudget.PurseEntry.COLUMN_RESERVE
+                                    + " FROM " + FamilyBudget.PurseEntry.TABLE_NAME
+                                    + " WHERE _id = " + idPurse;
+
+                            // подключаемся к БД
+                            db = dbHelper.getWritableDatabase();
+                            //Получаем курсор по кошельку где ID = idPurse
+                            cursor2 = db.rawQuery(query, null);
+                            while (cursor2.moveToNext()) {
+                                reserv = cursor2.getDouble(cursor2
+                                        .getColumnIndex(FamilyBudget.PurseEntry.COLUMN_RESERVE));
+                                Log.d(LOG_TAG, "--- Query in purse reserv: ---");
+                            }
+
+                            cursor2.close();
+
+                            reserv += summReserve;
+
+                            //Контейнер для обновленных значений
+                            values = new ContentValues();
+                            values.put(FamilyBudget.PurseEntry.COLUMN_RESERVE, reserv);
+                            // обновляем запись и получаем ее ID
+                            rowID = db.update(FamilyBudget.PurseEntry.TABLE_NAME, values, FamilyBudget.PurseEntry._ID + "= ?", new String[]{idPurse});
+                            Log.d(LOG_TAG, "--- Update in purse reserv: ID = " + rowID);
+
+                            db.close();
+                            finish();
                             break;
 
                         //Операция перевода из резерва
                         case R.id.radio_outInner:
 
+                            summReserve = 0;
+                            reserv = 0;
+
+                            summReserve += summ;
+
+                            putInBdTableBudget(FamilyBudget.BudgetEntry.TYPE_INNER,summReserve, "Из резерва " + _tvNamePurse.getText().toString() + ". " + name, date);
+
+                            //Получаем баланс и резерв кошелька
+                            query = "SELECT " + FamilyBudget.PurseEntry.COLUMN_RESERVE
+                                    + " FROM " + FamilyBudget.PurseEntry.TABLE_NAME
+                                    + " WHERE _id = " + idPurse;
+
+                            // подключаемся к БД
+                            db = dbHelper.getWritableDatabase();
+                            //Получаем курсор по кошельку где ID = idPurse
+                            cursor2 = db.rawQuery(query, null);
+                            while (cursor2.moveToNext()) {
+                                reserv = cursor2.getDouble(cursor2
+                                        .getColumnIndex(FamilyBudget.PurseEntry.COLUMN_RESERVE));
+                                Log.d(LOG_TAG, "--- Query in purse reserv: ---");
+                            }
+
+                            cursor2.close();
+
+                            reserv -= summReserve;
+
+                            //Контейнер для обновленных значений
+                            values = new ContentValues();
+                            values.put(FamilyBudget.PurseEntry.COLUMN_RESERVE, reserv);
+                            // обновляем запись и получаем ее ID
+                            rowID = db.update(FamilyBudget.PurseEntry.TABLE_NAME, values, FamilyBudget.PurseEntry._ID + "= ?", new String[]{idPurse});
+                            Log.d(LOG_TAG, "--- Update in purse reserv: ID = " + rowID);
+
+                            db.close();
+                            finish();
                             break;
 
                         //Операция перевода в другой кошелек
                         case R.id.radio_translation:
-                            String NamePurseForTranslation = _spinnerNamePurse.getSelectedItem().toString();
+                            String namePurseForTranslation = _spinnerNamePurse.getSelectedItem().toString();
+                            summReserve = 0;
+                            balans = 0;
+                            reserv = 0;
+
+                            //Записываем в базу Budget операцию по переводу на другой кошелек
+                            //вычитаем из текущего кошелька
+                            putInBdTableBudget(FamilyBudget.BudgetEntry.TYPE_TRANSLATION,summ*type, "Перевод в кошелк " + namePurseForTranslation + ". " + name, date);
+
+                            //Получаем баланс кошелька
+                            query = "SELECT " + FamilyBudget.PurseEntry.COLUMN_BALANS
+                                    + " FROM " + FamilyBudget.PurseEntry.TABLE_NAME
+                                    + " WHERE _id = " + idPurse;
+
+                            // подключаемся к БД
+                            db = dbHelper.getWritableDatabase();
+                            //Получаем курсор по кошельку где ID = idPurse
+                            cursor2 = db.rawQuery(query, null);
+                            while (cursor2.moveToNext()) {
+                                balans = cursor2.getDouble(cursor2
+                                        .getColumnIndex(FamilyBudget.PurseEntry.COLUMN_BALANS));
+                                Log.d(LOG_TAG, "--- Query in purse balans: ---");
+                            }
+
+                            cursor2.close();
+                            balans -= summ;
+
+                            //Контейнер для обновленных значений
+                            values = new ContentValues();
+                            values.put(FamilyBudget.PurseEntry.COLUMN_BALANS, balans);
+                            // обновляем запись и получаем ее ID
+                            rowID = db.update(FamilyBudget.PurseEntry.TABLE_NAME, values, FamilyBudget.PurseEntry._ID + "= ?", new String[]{idPurse});
+                            Log.d(LOG_TAG, "--- Update in purse balans and reserv: ID = " + rowID);
+
+                            //Получаем баланс и ID кошелька в который будет перевод
+                            query = "SELECT " + FamilyBudget.PurseEntry.COLUMN_BALANS + ", "
+                                    + FamilyBudget.PurseEntry._ID
+                                    + " FROM " + FamilyBudget.PurseEntry.TABLE_NAME
+                                    + " WHERE name = " + namePurseForTranslation;
+
+                            int idPurseForTranslate=-1;
+                            //Получаем курсор по кошельку где name = namePurseForTranslation
+                            cursor2 = db.rawQuery(query, null);
+                            while (cursor2.moveToNext()) {
+                                balans = cursor2.getDouble(cursor2
+                                        .getColumnIndex(FamilyBudget.PurseEntry.COLUMN_BALANS));
+                                idPurseForTranslate = cursor2.getInt(cursor2.
+                                        getColumnIndex(FamilyBudget.PurseEntry._ID));
+                                Log.d(LOG_TAG, "--- Query in purse balans: ---");
+                            }
+                            cursor2.close();
+                            balans+=summ;
+
+                            //Контейнер для обновленных значений
+                            values = new ContentValues();
+                            values.put(FamilyBudget.PurseEntry.COLUMN_BALANS, balans);
+                            // обновляем запись и получаем ее ID
+                            if (idPurseForTranslate>=0) {
+                                rowID = db.update(FamilyBudget.PurseEntry.TABLE_NAME, values, FamilyBudget.PurseEntry._ID + "= ?", new String[]{""+idPurseForTranslate});
+                                Log.d(LOG_TAG, "--- Update in purse balans: ID = " + rowID);
+                            }
+                            values = new ContentValues();
+                            values.put("idPurse", idPurseForTranslate);
+                            values.put("type", FamilyBudget.BudgetEntry.TYPE_TRANSLATION);
+                            values.put("summ", summ);
+                            values.put("name", "Перевод из кошелька " + _tvNamePurse.getText().toString() + ". " + name);
+                            values.put("date", date);
+
+                            Log.d(LOG_TAG, "--- Insert in table budget: ---");
+                            // вставляем запись и получаем ее ID
+                            rowID = db.insert("budget", null, values);
+                            Log.d(LOG_TAG, "row inserted, ID = " + rowID);
+
+                            db.close();
+                            finish();
 
                             break;
                     }
@@ -227,8 +382,10 @@ public class OperationActivity extends AppCompatActivity {
                     _checkBoxPutInReserve.setEnabled(false);
                     _checkBoxPutInReserve.setChecked(false);
                     _spinnerProcentReserve.setEnabled(false);
-                    _rbIncome.setChecked(true);
-                    _rbExpenses.setChecked(false);
+//                    _rbIncome.setChecked(false);
+                    _rbExpenses.setChecked(true);
+                    _rbIncome.setEnabled(false);
+                    _rbExpenses.setEnabled(false);
                     break;
 
                 //Перевод из резерва
@@ -237,17 +394,20 @@ public class OperationActivity extends AppCompatActivity {
                     _checkBoxPutInReserve.setEnabled(false);
                     _checkBoxPutInReserve.setChecked(false);
                     _spinnerProcentReserve.setEnabled(false);
-                    _rbIncome.setChecked(false);
-                    _rbExpenses.setChecked(true);
+                    _rbIncome.setChecked(true);
+//                    _rbExpenses.setChecked(false);
+                    _rbIncome.setEnabled(false);
+                    _rbExpenses.setEnabled(false);
                     break;
 
                 //Внешняя оперция
                 case R.id.radio_external:
                     _spinnerNamePurse.setEnabled(false);
-                    _checkBoxPutInReserve.setEnabled(true);
+                    if (_rbExpenses.isChecked())_checkBoxPutInReserve.setEnabled(false); else _checkBoxPutInReserve.setEnabled(true);
                     _spinnerProcentReserve.setEnabled(false);
-                    _rbIncome.setChecked(false);
-                    _rbExpenses.setChecked(false);
+                    _rbIncome.setEnabled(true);
+                    _rbExpenses.setEnabled(true);
+//                    _radio_group_type.clearCheck();
                     break;
 
                 //Перевод в другой кошелек
@@ -256,6 +416,10 @@ public class OperationActivity extends AppCompatActivity {
                     _checkBoxPutInReserve.setEnabled(false);
                     _checkBoxPutInReserve.setChecked(false);
                     _spinnerProcentReserve.setEnabled(false);
+//                    _rbIncome.setChecked(false);
+                    _rbExpenses.setChecked(true);
+                    _rbIncome.setEnabled(false);
+                    _rbExpenses.setEnabled(false);
                     break;
 
                 default:
@@ -318,27 +482,31 @@ public class OperationActivity extends AppCompatActivity {
         // закрываем подключение к БД
         dbHelper.close();
     }
-//    private void putInBdTablePurse(double balans, double reserv) {
-//        // создаем объект для создания и управления версиями БД
-//        BudgetDbHelper dbHelper = new BudgetDbHelper(this);
-//
-//        // подключаемся к БД
-//        SQLiteDatabase db = dbHelper.getWritableDatabase();
-//
-//        // создаем объект для данных
-//        ContentValues cv = new ContentValues();
-//
-//        // подготовим данные для вставки в виде пар: наименование столбца - значение
-//        cv.put("idPurse", idPurse);
-//        cv.put("balans", balans);
-//        cv.put("reserv", reserv);
-//
-//        Log.d(LOG_TAG, "--- Insert in mytable: ---");
-//        // вставляем запись и получаем ее ID
-////        long rowID = db.insert("purse", null, cv);
-////        Log.d(LOG_TAG, "row inserted, ID = " + rowID);
-//
-//        // закрываем подключение к БД
-//        dbHelper.close();
-//    }
+    private void getNamePurses() {
+        ArrayList<String> namePursesList = new ArrayList<>();
+
+        // создаем объект для создания и управления версиями БД
+        BudgetDbHelper dbHelper = new BudgetDbHelper(this);
+
+        // подключаемся к БД
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+
+        //Получаем баланс и резерв кошелька
+        String query = "SELECT " + FamilyBudget.PurseEntry.COLUMN_NAME
+                + " FROM " + FamilyBudget.PurseEntry.TABLE_NAME
+                + " WHERE _id <> " + idPurse;
+
+        //Получаем курсор по кошельку где ID <> idPurse
+        Cursor cursor2 = db.rawQuery(query, null);
+        while (cursor2.moveToNext()) {
+            namePursesList.add(cursor2.getString(cursor2.getColumnIndex(FamilyBudget.PurseEntry.COLUMN_NAME)));
+            Log.d(LOG_TAG, "--- Query in purse namePurse: ---");
+        }
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, namePursesList);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        _spinnerNamePurse.setAdapter(adapter);
+
+        db.close();
+
+    }
 }
