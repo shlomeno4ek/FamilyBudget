@@ -211,7 +211,7 @@ public class ViewPurseActivity extends AppCompatActivity {
             int dateColumnIndexBudget = cursorBudget.getColumnIndex(FamilyBudget.BudgetEntry.COLUMN_DATE);
 
             // Проходим через все ряды таблицы purse
-            while (cursorPurse.moveToNext()) {
+            while (cursorPurse != null && cursorPurse.moveToNext()) {
                 // Используем индекс для получения строки или числа
 //                int currentID = cursorPurse.getInt(idColumnIndexPurse);
                 String currentName = cursorPurse.getString(nameColumnIndexPurse);
@@ -221,14 +221,14 @@ public class ViewPurseActivity extends AppCompatActivity {
             }
 
             // Проходим через все ряды таблицы budget
-            while (cursorBudget.moveToNext()) {
+            while (cursorPurse != null && cursorBudget.moveToNext()) {
                 // Используем индекс для получения строки или числа
                 int currentID = cursorBudget.getInt(idColumnIndexBudget);
-                int currentIdPurse = cursorPurse.getInt(idPurseColumnIndexBudget);
-                int currentTYPE = cursorPurse.getInt(typeColumnIndexBudget);
-                double currentSUMM = cursorPurse.getDouble(summColumnIndexBudget);
-                String currentName = cursorPurse.getString(nameColumnIndexBudget);
-                String currentDATE = cursorPurse.getString(dateColumnIndexBudget);
+                int currentIdPurse = cursorBudget.getInt(idPurseColumnIndexBudget);
+                int currentTYPE = cursorBudget.getInt(typeColumnIndexBudget);
+                double currentSUMM = cursorBudget.getDouble(summColumnIndexBudget);
+                String currentName = cursorBudget.getString(nameColumnIndexBudget);
+                String currentDATE = cursorBudget.getString(dateColumnIndexBudget);
                 // Выводим значения каждого столбца
                 allPurses.add(currentSUMM + " " +currentName+" " + currentDATE);
             }
