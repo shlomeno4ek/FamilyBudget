@@ -172,7 +172,7 @@ public class MainActivity extends AppCompatActivity {
                 //Добавляем в map пару i - ID
 //                _idAndNamePurses.add(currentID);
                 idAndNamePurse.put(i,currentID);
-                Log.d(LOG_TAG, "читаем из базы id = " + currentID + " имя: " + currentName + " и вставляем в HashMap с ключом: " + i);
+                Log.d(LOG_TAG, "MainActivity читаем из базы id = " + currentID + " имя: " + currentName + " и вставляем в HashMap с ключом: " + i);
                 i++;
             }
         } finally {
