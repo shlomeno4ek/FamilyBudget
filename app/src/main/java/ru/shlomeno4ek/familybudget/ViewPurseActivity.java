@@ -25,6 +25,8 @@ import ru.shlomeno4ek.familybudget.data.FamilyBudget;
 public class ViewPurseActivity extends AppCompatActivity {
 
     private TextView tvNamePurse;
+    private TextView tvBalansPurse;
+    private TextView tvReservPurse;
     private ListView _lvOperationsPurse;
 //    private String pursesInfo[];
     private String idPurse;
@@ -41,6 +43,8 @@ public class ViewPurseActivity extends AppCompatActivity {
 
         //Получаем елементы Activity
         tvNamePurse = (TextView) findViewById(R.id.tvNamePurse);
+        tvBalansPurse = (TextView) findViewById(R.id.tvBalansPurse);
+        tvReservPurse = (TextView) findViewById(R.id.tvReservPurse);
         _lvOperationsPurse =(ListView) findViewById(R.id.lvOperationsPurse);
 
         //Получаем параменты, переданные в Intent
@@ -50,18 +54,18 @@ public class ViewPurseActivity extends AppCompatActivity {
         // создаем объект для создания и управления версиями БД
         _mDbHelper = new BudgetDbHelper(this);
 
-        //Получаем кнопку добавления операции и устанавливаем на нее действие
-        _imageBtnAddOperation = (ImageButton) findViewById(R.id.imageBtnAddOperation);
-        _imageBtnAddOperation.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(ViewPurseActivity.this, OperationActivity.class);
-                //Передаем в интент id  и namePurse для OperationActivity
-                intent.putExtra("id",idPurse);
-                intent.putExtra("namePurse",tvNamePurse.getText().toString().split("\n")[0]);
-                startActivity(intent);
-            }
-        });
+//        //Получаем кнопку добавления операции и устанавливаем на нее действие
+//        _imageBtnAddOperation = (ImageButton) findViewById(R.id.imageBtnAddOperation);
+//        _imageBtnAddOperation.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Intent intent = new Intent(ViewPurseActivity.this, OperationActivity.class);
+//                //Передаем в интент id  и namePurse для OperationActivity
+//                intent.putExtra("id",idPurse);
+//                intent.putExtra("namePurse",tvNamePurse.getText().toString().split("\n")[0]);
+//                startActivity(intent);
+//            }
+//        });
 
         //Подтверждение удаления кошелька
         context = ViewPurseActivity.this;
@@ -135,16 +139,26 @@ public class ViewPurseActivity extends AppCompatActivity {
 
         // Операции для выбранного пункта меню
         switch (id) {
+            //Выбран пункт меню "Удаление кошелька"
             case R.id.action_del_purse:
                 ad.show();
                 return true;
 
+            //Выбран пункт меню "Редактирование кошелька"
             case R.id.action_edit_purse:
                 Intent intent = new Intent(ViewPurseActivity.this, EditPurseActivity.class);
                 intent.putExtra("id",idPurse);
                 intent.putExtra("namePurse",tvNamePurse.getText().toString().split("\n")[0]);
                 startActivity(intent);
+                return true;
 
+            //Выбран пункт меню "Добавление операции"
+            case R.id.action_add_operations:
+                Intent intent1 = new Intent(ViewPurseActivity.this, OperationActivity.class);
+                //Передаем в интент id  и namePurse для OperationActivity
+                intent1.putExtra("id",idPurse);
+                intent1.putExtra("namePurse",tvNamePurse.getText().toString().split("\n")[0]);
+                startActivity(intent1);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -159,7 +173,9 @@ public class ViewPurseActivity extends AppCompatActivity {
         String[] projectionOnPurse = {
                 FamilyBudget.PurseEntry._ID,
                 FamilyBudget.PurseEntry.COLUMN_NAME,
-                FamilyBudget.PurseEntry.COLUMN_OWNER};
+                FamilyBudget.PurseEntry.COLUMN_OWNER,
+                FamilyBudget.PurseEntry.COLUMN_BALANS,
+                FamilyBudget.PurseEntry.COLUMN_RESERVE};
 
         String[] projectionOnBudget = {
                 FamilyBudget.BudgetEntry._ID,
@@ -201,6 +217,8 @@ public class ViewPurseActivity extends AppCompatActivity {
             int idColumnIndexPurse = cursorPurse.getColumnIndex(FamilyBudget.PurseEntry._ID);
             int nameColumnIndexPurse = cursorPurse.getColumnIndex(FamilyBudget.PurseEntry.COLUMN_NAME);
             int ownerColumnIndexPurse = cursorPurse.getColumnIndex(FamilyBudget.PurseEntry.COLUMN_OWNER);
+            int balansColumnIndexPurse = cursorPurse.getColumnIndex(FamilyBudget.PurseEntry.COLUMN_BALANS);
+            int reservColumnIndexPurse = cursorPurse.getColumnIndex(FamilyBudget.PurseEntry.COLUMN_RESERVE);
 
             // Узнаем индекс каждого столбца
             int idColumnIndexBudget = cursorBudget.getColumnIndex(FamilyBudget.BudgetEntry._ID);
@@ -216,8 +234,12 @@ public class ViewPurseActivity extends AppCompatActivity {
 //                int currentID = cursorPurse.getInt(idColumnIndexPurse);
                 String currentName = cursorPurse.getString(nameColumnIndexPurse);
 //                String currentOwner = cursorPurse.getString(ownerColumnIndexPurse);
+                Double currentBalans = cursorPurse.getDouble(balansColumnIndexPurse);
+                Double currentReserv = cursorPurse.getDouble(reservColumnIndexPurse);
 
                 tvNamePurse.setText(currentName);
+                tvBalansPurse.setText("Баланс: " + currentBalans);
+                tvReservPurse.setText("Из них в резерве: " + currentReserv);
             }
 
             // Проходим через все ряды таблицы budget
@@ -246,7 +268,7 @@ public class ViewPurseActivity extends AppCompatActivity {
             pursesInfo = allPurses.toArray(pursesInfo);
             return pursesInfo;
         } else {
-            tvNamePurse.append("\nНи каких движений пока не проводилось, добавте операции для данного кошелька через кнопку");
+            tvReservPurse.append("\n\nНи каких движений пока не проводилось, добавте операции для данного кошелька через кнопку");
             String pursesInfo[] = null;
             return pursesInfo;
         }
