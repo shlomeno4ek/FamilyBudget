@@ -51,6 +51,8 @@ public class AddPurseActivity extends AppCompatActivity implements View.OnClickL
 
         cv.put("name", name);
         cv.put("owner", "Owner");
+        cv.put("balans", 0);
+        cv.put("reserve", 0);
 
         Log.d(LOG_TAG, "--- Insert in purse: ---");
         // вставляем запись и получаем ее ID
