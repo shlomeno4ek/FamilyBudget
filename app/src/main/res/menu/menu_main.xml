@@ -4,10 +4,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".MainActivity">
     <item
+        android:icon="@drawable/purse_37x33"
         android:id="@+id/action_add_purse"
         android:orderInCategory="0"
         android:title="@string/action_add_purse"
-        app:showAsAction="never"/>
+        app:showAsAction="ifRoom"/>
 
     <item
         android:id="@+id/action_about"
