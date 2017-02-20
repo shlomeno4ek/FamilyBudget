@@ -11,23 +11,38 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="ru.shlomeno4ek.familybudget.ViewPurseActivity">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/tvNamePurse"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignBottom="@+id/btnAddOperations"
-        android:layout_toLeftOf="@+id/btnAddOperations"
-        android:layout_toStartOf="@+id/btnAddOperations"
-        android:textAppearance="@style/TextAppearance.AppCompat.Display1"
-        tools:ignore="RelativeOverlap,UnknownId,UnknownIdInLayout" />
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/tvNamePurse"
+            android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+            tools:ignore="RelativeOverlap,UnknownId,UnknownIdInLayout" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/tvBalansPurse" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/tvReservPurse" />
+
+        <ListView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/lvOperationsPurse" />
+    </LinearLayout>
 
     <ImageButton
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:srcCompat="@android:drawable/ic_menu_mylocation"
+        app:srcCompat="@drawable/money_37x33"
         android:id="@+id/imageBtnAddOperation"
         android:layout_alignParentTop="true"
         android:layout_alignParentRight="true"
@@ -35,11 +50,4 @@
         android:contentDescription=""
         tools:ignore="ContentDescription" />
 
-    <ListView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/lvOperationsPurse"
-        android:layout_below="@+id/imageBtnAddOperation"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
 </RelativeLayout>
