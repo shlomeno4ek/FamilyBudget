@@ -17,7 +17,7 @@
     <string name="radioBattonExternal">Внешняя</string>
     <string name="radioBattonTranslation">Перевод в другой кошелек</string>
     <string name="tvDate">Дата операции</string>
-    <string name="addOperation">Добавление операции</string>
+    <string name="addOperation">Добавитье операцию</string>
     <string name="nameOperation">Название операции</string>
     <string name="summOperation">Сумма</string>
     <string name="typeOperation">Тип оперции</string>
