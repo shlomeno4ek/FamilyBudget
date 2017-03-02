@@ -25,7 +25,7 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.Calendar;
 
-import ru.shlomeno4ek.familybudget.data.BudgetDbHelper;
+import ru.shlomeno4ek.familybudget.data.DB;
 import ru.shlomeno4ek.familybudget.data.FamilyBudget;
 
 import static ru.shlomeno4ek.familybudget.MainActivity.LOG_TAG;
@@ -57,7 +57,7 @@ public class OperationActivity extends AppCompatActivity {
     int myMonth = c.get(Calendar.MONTH);
     int myDay = c.get(Calendar.DAY_OF_MONTH);
 
-    BudgetDbHelper dbHelper;
+    DB dbHelper;
     Context context;
 
     @Override
@@ -66,7 +66,8 @@ public class OperationActivity extends AppCompatActivity {
         setContentView(R.layout.activity_add_operation);
 
         // создаем объект для создания и управления версиями БД
-        dbHelper = new BudgetDbHelper(this);
+        dbHelper = new DB(this);
+        dbHelper.open();
 
         //Получаем параменты, переданные в Intent
         Intent intent = getIntent();
@@ -175,10 +176,10 @@ public class OperationActivity extends AppCompatActivity {
                                     + " FROM " + FamilyBudget.PurseEntry.TABLE_NAME
                                     + " WHERE _id = " + idPurse;
 
-                            // подключаемся к БД
-                            SQLiteDatabase db = dbHelper.getWritableDatabase();
+//                            // подключаемся к БД
+//                            SQLiteDatabase db = dbHelper.getWritableDatabase();
                             //Получаем курсор по кошельку где ID = idPurse
-                            Cursor cursor2 = db.rawQuery(query, null);
+                            Cursor cursor2 = dbHelper.getRawQuery(query, null);
                             while (cursor2.moveToNext()) {
                                 balans = cursor2.getDouble(cursor2
                                         .getColumnIndex(FamilyBudget.PurseEntry.COLUMN_BALANS));
@@ -196,10 +197,10 @@ public class OperationActivity extends AppCompatActivity {
                             values.put(FamilyBudget.PurseEntry.COLUMN_BALANS, balans);
                             values.put(FamilyBudget.PurseEntry.COLUMN_RESERVE, reserv);
                             // обновляем запись и получаем ее ID
-                            long rowID = db.update(FamilyBudget.PurseEntry.TABLE_NAME, values, FamilyBudget.PurseEntry._ID + "= ?", new String[]{idPurse});
+                            long rowID = dbHelper.updateRec(FamilyBudget.PurseEntry.TABLE_NAME, values, FamilyBudget.PurseEntry._ID + "= ?", new String[]{idPurse});
                             Log.d(LOG_TAG, "--- Update in purse balans and reserv: ID = " + rowID);
 
-                            db.close();
+//                            dbHelper.close();
                             finish();
                             break;
 
@@ -218,10 +219,10 @@ public class OperationActivity extends AppCompatActivity {
                                     + " FROM " + FamilyBudget.PurseEntry.TABLE_NAME
                                     + " WHERE _id = " + idPurse;
 
-                            // подключаемся к БД
-                            db = dbHelper.getWritableDatabase();
+//                            // подключаемся к БД
+//                            db = dbHelper.getWritableDatabase();
                             //Получаем курсор по кошельку где ID = idPurse
-                            cursor2 = db.rawQuery(query, null);
+                            cursor2 = dbHelper.getRawQuery(query, null);
                             while (cursor2.moveToNext()) {
                                 reserv = cursor2.getDouble(cursor2
                                         .getColumnIndex(FamilyBudget.PurseEntry.COLUMN_RESERVE));
@@ -236,10 +237,10 @@ public class OperationActivity extends AppCompatActivity {
                             values = new ContentValues();
                             values.put(FamilyBudget.PurseEntry.COLUMN_RESERVE, reserv);
                             // обновляем запись и получаем ее ID
-                            rowID = db.update(FamilyBudget.PurseEntry.TABLE_NAME, values, FamilyBudget.PurseEntry._ID + "= ?", new String[]{idPurse});
+                            rowID = dbHelper.updateRec(FamilyBudget.PurseEntry.TABLE_NAME, values, FamilyBudget.PurseEntry._ID + "= ?", new String[]{idPurse});
                             Log.d(LOG_TAG, "--- Update in purse reserv: ID = " + rowID);
 
-                            db.close();
+//                            db.close();
                             finish();
                             break;
 
@@ -258,10 +259,10 @@ public class OperationActivity extends AppCompatActivity {
                                     + " FROM " + FamilyBudget.PurseEntry.TABLE_NAME
                                     + " WHERE _id = " + idPurse;
 
-                            // подключаемся к БД
-                            db = dbHelper.getWritableDatabase();
+//                            // подключаемся к БД
+//                            db = dbHelper.getWritableDatabase();
                             //Получаем курсор по кошельку где ID = idPurse
-                            cursor2 = db.rawQuery(query, null);
+                            cursor2 = dbHelper.getRawQuery(query, null);
                             while (cursor2.moveToNext()) {
                                 reserv = cursor2.getDouble(cursor2
                                         .getColumnIndex(FamilyBudget.PurseEntry.COLUMN_RESERVE));
@@ -276,10 +277,10 @@ public class OperationActivity extends AppCompatActivity {
                             values = new ContentValues();
                             values.put(FamilyBudget.PurseEntry.COLUMN_RESERVE, reserv);
                             // обновляем запись и получаем ее ID
-                            rowID = db.update(FamilyBudget.PurseEntry.TABLE_NAME, values, FamilyBudget.PurseEntry._ID + "= ?", new String[]{idPurse});
+                            rowID = dbHelper.updateRec(FamilyBudget.PurseEntry.TABLE_NAME, values, FamilyBudget.PurseEntry._ID + "= ?", new String[]{idPurse});
                             Log.d(LOG_TAG, "--- Update in purse reserv: ID = " + rowID);
 
-                            db.close();
+//                            db.close();
                             finish();
                             break;
 
@@ -299,10 +300,10 @@ public class OperationActivity extends AppCompatActivity {
                                     + " FROM " + FamilyBudget.PurseEntry.TABLE_NAME
                                     + " WHERE _id = " + idPurse;
 
-                            // подключаемся к БД
-                            db = dbHelper.getWritableDatabase();
+//                            // подключаемся к БД
+//                            db = dbHelper.getWritableDatabase();
                             //Получаем курсор по кошельку где ID = idPurse
-                            cursor2 = db.rawQuery(query, null);
+                            cursor2 = dbHelper.getRawQuery(query, null);
                             while (cursor2.moveToNext()) {
                                 balans = cursor2.getDouble(cursor2
                                         .getColumnIndex(FamilyBudget.PurseEntry.COLUMN_BALANS));
@@ -316,7 +317,7 @@ public class OperationActivity extends AppCompatActivity {
                             values = new ContentValues();
                             values.put(FamilyBudget.PurseEntry.COLUMN_BALANS, balans);
                             // обновляем запись и получаем ее ID
-                            rowID = db.update(FamilyBudget.PurseEntry.TABLE_NAME, values, FamilyBudget.PurseEntry._ID + "= ?", new String[]{idPurse});
+                            rowID = dbHelper.updateRec(FamilyBudget.PurseEntry.TABLE_NAME, values, FamilyBudget.PurseEntry._ID + "= ?", new String[]{idPurse});
                             Log.d(LOG_TAG, "--- Update in purse balans and reserv: ID = " + rowID);
 
                             //Получаем баланс и ID кошелька в который будет перевод
@@ -327,7 +328,7 @@ public class OperationActivity extends AppCompatActivity {
 
                             int idPurseForTranslate=-1;
                             //Получаем курсор по кошельку где name = namePurseForTranslation
-                            cursor2 = db.rawQuery(query, null);
+                            cursor2 = dbHelper.getRawQuery(query, null);
                             while (cursor2.moveToNext()) {
                                 balans = cursor2.getDouble(cursor2
                                         .getColumnIndex(FamilyBudget.PurseEntry.COLUMN_BALANS));
@@ -343,7 +344,7 @@ public class OperationActivity extends AppCompatActivity {
                             values.put(FamilyBudget.PurseEntry.COLUMN_BALANS, balans);
                             // обновляем запись и получаем ее ID
                             if (idPurseForTranslate>=0) {
-                                rowID = db.update(FamilyBudget.PurseEntry.TABLE_NAME, values, FamilyBudget.PurseEntry._ID + "= ?", new String[]{""+idPurseForTranslate});
+                                rowID = dbHelper.updateRec(FamilyBudget.PurseEntry.TABLE_NAME, values, FamilyBudget.PurseEntry._ID + "= ?", new String[]{""+idPurseForTranslate});
                                 Log.d(LOG_TAG, "--- Update in purse balans: ID = " + rowID);
                             }
                             values = new ContentValues();
@@ -355,10 +356,10 @@ public class OperationActivity extends AppCompatActivity {
 
                             Log.d(LOG_TAG, "--- Insert in table budget: ---");
                             // вставляем запись и получаем ее ID
-                            rowID = db.insert("budget", null, values);
+                            rowID = dbHelper.addRec("budget", null, values);
                             Log.d(LOG_TAG, "row inserted, ID = " + rowID);
 
-                            db.close();
+//                            db.close();
                             finish();
 
                             break;
@@ -455,10 +456,10 @@ public class OperationActivity extends AppCompatActivity {
     //Метод записывает в базу Budget новые операции
     private void putInBdTableBudget(int type, double summ, String name, String date) {
 //        // создаем объект для создания и управления версиями БД
-//        BudgetDbHelper dbHelper = new BudgetDbHelper(this);
+//        DB dbHelper = new DB(this);
 
-        // подключаемся к БД
-        SQLiteDatabase db = dbHelper.getWritableDatabase();
+//        // подключаемся к БД
+//        SQLiteDatabase db = dbHelper.getWritableDatabase();
 
         // создаем объект для данных
         ContentValues cv = new ContentValues();
@@ -476,20 +477,20 @@ public class OperationActivity extends AppCompatActivity {
 
         Log.d(LOG_TAG, "--- Insert in table budget: ---");
         // вставляем запись и получаем ее ID
-        long rowID = db.insert("budget", null, cv);
+        long rowID = dbHelper.addRec("budget", null, cv);
         Log.d(LOG_TAG, "row inserted, ID = " + rowID);
 
         // закрываем подключение к БД
-        dbHelper.close();
+//        dbHelper.close();
     }
     private void getNamePurses() {
         ArrayList<String> namePursesList = new ArrayList<>();
 
         // создаем объект для создания и управления версиями БД
-        BudgetDbHelper dbHelper = new BudgetDbHelper(this);
+//        DB dbHelper = new DB(this);
 
-        // подключаемся к БД
-        SQLiteDatabase db = dbHelper.getWritableDatabase();
+//        // подключаемся к БД
+//        SQLiteDatabase db = dbHelper.getWritableDatabase();
 
         //Получаем баланс и резерв кошелька
         String query = "SELECT " + FamilyBudget.PurseEntry.COLUMN_NAME
@@ -497,7 +498,7 @@ public class OperationActivity extends AppCompatActivity {
                 + " WHERE _id <> " + idPurse;
 
         //Получаем курсор по кошельку где ID <> idPurse
-        Cursor cursor2 = db.rawQuery(query, null);
+        Cursor cursor2 = dbHelper.getRawQuery(query, null);
         while (cursor2.moveToNext()) {
             namePursesList.add(cursor2.getString(cursor2.getColumnIndex(FamilyBudget.PurseEntry.COLUMN_NAME)));
             Log.d(LOG_TAG, "--- Query in purse namePurse: ---");
@@ -506,7 +507,12 @@ public class OperationActivity extends AppCompatActivity {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         _spinnerNamePurse.setAdapter(adapter);
 
-        db.close();
+//        db.close();
 
+    }
+    protected void onDestroy() {
+        super.onDestroy();
+        // закрываем подключение при выходе
+        dbHelper.close();
     }
 }

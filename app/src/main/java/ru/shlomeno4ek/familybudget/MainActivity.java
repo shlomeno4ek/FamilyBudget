@@ -1,8 +1,13 @@
 package ru.shlomeno4ek.familybudget;
 
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
+import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -14,17 +19,19 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.concurrent.TimeUnit;
 
-import ru.shlomeno4ek.familybudget.data.BudgetDbHelper;
+import ru.shlomeno4ek.familybudget.data.DB;
 import ru.shlomeno4ek.familybudget.data.FamilyBudget;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
     final static String LOG_TAG = "myLogs";
 
-    private BudgetDbHelper _mDbHelper;
+    private DB _mDbHelper;
     private ListView _lvMain;
     private TextView _tvMainActBalansAll;
     private TextView _tvMainActReserveAll;
@@ -32,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
     private HashMap<Integer, Integer> idAndNamePurse;
     private double balansAll;
     private double reserveAll;
+    private SimpleCursorAdapter scAdapter;
 
 
     @Override
@@ -39,16 +47,22 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
 
         //Получаем массив из Нзавания кошелька и его баланса
-        String[] temp = displayDatabaseInfo();
-        //Если массив не NULL то создаем и подключаем адптер для ListView, иначе очищаем ListView
-        if (temp != null) {
-            ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, displayDatabaseInfo());
-            _lvMain.setAdapter(adapter);
-        } else _lvMain.setAdapter(null);
+//        String[] temp = displayDatabaseInfo();
+//        //Если массив не NULL то создаем и подключаем адптер для ListView, иначе очищаем ListView
+//        if (temp != null) {
+//            ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, displayDatabaseInfo());
+//            _lvMain.setAdapter(adapter);
+//        } else _lvMain.setAdapter(null);
 
-
-
+        // получаем новый курсор с данными
+        getSupportLoaderManager().getLoader(0).forceLoad();
     }
+
+//    @Override
+//    protected void onPause() {
+//        super.onPause();
+//        _mDbHelper.close();
+//    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,24 +70,41 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         // создаем объект для создания и управления версиями БД
-        _mDbHelper = new BudgetDbHelper(this);
+        _mDbHelper = new DB(this);
+        _mDbHelper.open();
 
         //Получаем елементы Activity
         _tvMainActBalansAll = (TextView) findViewById(R.id.tvMainActBalansAll);
         _tvMainActReserveAll = (TextView) findViewById(R.id.tvMainActReserveAll);
-        _lvMain = (ListView) findViewById(R.id.lvMain);
+//        _lvMain = (ListView) findViewById(R.id.lvMain);
 
         //Добавляем действие на щелчок по элементу ListView
-        _lvMain.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent = new Intent(MainActivity.this, ViewPurseActivity.class);
-                Integer a = idAndNamePurse.get(position);
-                //Передаем в интент id для ViewPurseActivity
-                intent.putExtra("id",""+a);
-//                intent.putExtra("id",""+_idAndNamePurses.get(position));
-                startActivity(intent);
-            }
-        });
+//        _lvMain.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//                Intent intent = new Intent(MainActivity.this, ViewPurseActivity.class);
+//                Integer a = idAndNamePurse.get(position);
+//                //Передаем в интент id для ViewPurseActivity
+//                intent.putExtra("id",""+a);
+////                intent.putExtra("id",""+_idAndNamePurses.get(position));
+//                startActivity(intent);
+//            }
+//        });
+
+        //SimpleCursoreAdapter
+        // формируем столбцы сопоставления
+        String[] from = new String[] {  FamilyBudget.PurseEntry.COLUMN_NAME,
+                FamilyBudget.PurseEntry.COLUMN_BALANS,
+                FamilyBudget.PurseEntry.COLUMN_RESERVE };
+        int[] to = new int[] { R.id.tvNamePurseForLv, R.id.tvBalansPurseForLv,R.id.tvReservPurseForLv};
+
+        // создаем адаптер и настраиваем список
+        scAdapter = new SimpleCursorAdapter(this, R.layout.item, null, from, to, 0);
+        _lvMain = (ListView) findViewById(R.id.lvMain);
+        _lvMain.setAdapter(scAdapter);
+
+        // создаем лоадер для чтения данных
+        getSupportLoaderManager().initLoader(0, null, this);
+
     }
 
     //Создание меню для Activity
@@ -111,8 +142,8 @@ public class MainActivity extends AppCompatActivity {
         reserveAll = 0;
         idAndNamePurse = new HashMap<Integer, Integer>();
         int i = 0;
-        // Создадим и откроем для чтения базу данных
-        SQLiteDatabase db = _mDbHelper.getReadableDatabase();
+//        // Создадим и откроем для чтения базу данных
+//        SQLiteDatabase db = _mDbHelper.getReadableDatabase();
         //Массив с названиями для ListView
         String pursesInfo[];
 
@@ -133,7 +164,7 @@ public class MainActivity extends AppCompatActivity {
 //                FamilyBudget.BudgetEntry.COLUMN_DATE};
 
         // Делаем запрос
-        Cursor cursor = db.query(
+        Cursor cursor = _mDbHelper.getDB(
                 FamilyBudget.PurseEntry.TABLE_NAME,     // таблица
                 projectionOnPurse,                      // столбцы
                 null,                                   // столбцы для условия WHERE
@@ -192,5 +223,46 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return pursesInfo;
+    }
+    protected void onDestroy() {
+        super.onDestroy();
+        // закрываем подключение при выходе
+        _mDbHelper.close();
+    }
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle bndl) {
+        return new MyCursorLoader(this, _mDbHelper);
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+        scAdapter.swapCursor(cursor);
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+    }
+
+    static class MyCursorLoader extends CursorLoader {
+
+        DB db;
+
+        public MyCursorLoader(Context context, DB db) {
+            super(context);
+            this.db = db;
+        }
+
+        @Override
+        public Cursor loadInBackground() {
+            Cursor cursor = db.getAllData(FamilyBudget.PurseEntry.TABLE_NAME);
+            try {
+                TimeUnit.SECONDS.sleep(3);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            return cursor;
+        }
+
     }
 }

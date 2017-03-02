@@ -9,7 +9,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
-import ru.shlomeno4ek.familybudget.data.BudgetDbHelper;
+import ru.shlomeno4ek.familybudget.data.DB;
 
 import static ru.shlomeno4ek.familybudget.MainActivity.LOG_TAG;
 
@@ -35,7 +35,8 @@ public class AddPurseActivity extends AppCompatActivity implements View.OnClickL
     @Override
     public void onClick(View v) {
         // создаем объект для создания и управления версиями БД
-        BudgetDbHelper dbHelper = new BudgetDbHelper(this);
+        DB dbHelper = new DB(this);
+        dbHelper.open();
 
         // создаем объект для данных
         ContentValues cv = new ContentValues();
@@ -43,8 +44,8 @@ public class AddPurseActivity extends AppCompatActivity implements View.OnClickL
         // получаем данные из полей ввода
         String name = etAddNewPurse.getText().toString();
 
-        // подключаемся к БД
-        SQLiteDatabase db = dbHelper.getWritableDatabase();
+//        // подключаемся к БД
+//        SQLiteDatabase db = dbHelper.getWritableDatabase();
 
        // подготовим данные для вставки в виде пар: наименование столбца - значение
         if(!name.equals("")){
@@ -56,7 +57,7 @@ public class AddPurseActivity extends AppCompatActivity implements View.OnClickL
 
         Log.d(LOG_TAG, "--- Insert in purse: ---");
         // вставляем запись и получаем ее ID
-        long rowID = db.insert("purse", null, cv);
+        long rowID = dbHelper.addRec("purse", null, cv);
         Log.d(LOG_TAG, "row inserted, ID = " + rowID);
         }
 
@@ -65,4 +66,5 @@ public class AddPurseActivity extends AppCompatActivity implements View.OnClickL
         //закрываем Activity
         finish();
     }
+
 }

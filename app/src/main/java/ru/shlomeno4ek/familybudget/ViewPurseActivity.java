@@ -10,7 +10,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.ListView;
@@ -19,7 +18,7 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
-import ru.shlomeno4ek.familybudget.data.BudgetDbHelper;
+import ru.shlomeno4ek.familybudget.data.DB;
 import ru.shlomeno4ek.familybudget.data.FamilyBudget;
 
 public class ViewPurseActivity extends AppCompatActivity {
@@ -30,7 +29,7 @@ public class ViewPurseActivity extends AppCompatActivity {
     private ListView _lvOperationsPurse;
 //    private String pursesInfo[];
     private String idPurse;
-    private BudgetDbHelper _mDbHelper;
+    private DB _mDbHelper;
     private ImageButton _imageBtnAddOperation;
 
     AlertDialog.Builder ad;
@@ -52,7 +51,8 @@ public class ViewPurseActivity extends AppCompatActivity {
         idPurse = intent.getStringExtra("id");
 
         // создаем объект для создания и управления версиями БД
-        _mDbHelper = new BudgetDbHelper(this);
+        _mDbHelper = new DB(this);
+        _mDbHelper.open();
 
 //        //Получаем кнопку добавления операции и устанавливаем на нее действие
 //        _imageBtnAddOperation = (ImageButton) findViewById(R.id.imageBtnAddOperation);
@@ -85,15 +85,15 @@ public class ViewPurseActivity extends AppCompatActivity {
                 Toast.makeText(context, "Кошелек удален",
                         Toast.LENGTH_LONG).show();
 
-                // Создадим и откроем для чтения базу данных
-                SQLiteDatabase db = _mDbHelper.getReadableDatabase();
+//                // Создадим и откроем для чтения базу данных
+//                SQLiteDatabase db = _mDbHelper.getReadableDatabase();
 
                 //Удаляем кошелек и все его операции
-                db.delete(FamilyBudget.PurseEntry.TABLE_NAME, FamilyBudget.PurseEntry._ID + "=" + idPurse, null);
-                db.delete(FamilyBudget.BudgetEntry.TABLE_NAME, FamilyBudget.BudgetEntry.COLUMN_IDPURSE + "=" + idPurse, null);
+                _mDbHelper.deleteRec(FamilyBudget.PurseEntry.TABLE_NAME, FamilyBudget.PurseEntry._ID + "=" + idPurse, null);
+                _mDbHelper.deleteRec(FamilyBudget.BudgetEntry.TABLE_NAME, FamilyBudget.BudgetEntry.COLUMN_IDPURSE + "=" + idPurse, null);
 
-                //Закрываем подключение к базе
-                db.close();
+//                //Закрываем подключение к базе
+//                db.close();
                 finish();
             }
         });
@@ -166,8 +166,8 @@ public class ViewPurseActivity extends AppCompatActivity {
     }
 
     private String[] displayDatabaseInfo() {
-        // Создадим и откроем для чтения базу данных
-        SQLiteDatabase db = _mDbHelper.getReadableDatabase();
+//        // Создадим и откроем для чтения базу данных
+//        SQLiteDatabase db = _mDbHelper.getReadableDatabase();
 
         // Зададим условие для выборки - список столбцов
         String[] projectionOnPurse = {
@@ -191,7 +191,7 @@ public class ViewPurseActivity extends AppCompatActivity {
         String[] selectionArgsBudget = {idPurse};
 
         // Делаем запрос кошелька
-        Cursor cursorPurse = db.query(
+        Cursor cursorPurse = _mDbHelper.getDB(
                 FamilyBudget.PurseEntry.TABLE_NAME,     // таблица
                 projectionOnPurse,                      // столбцы
                 selectionPurse,                                   // столбцы для условия WHERE
@@ -201,7 +201,7 @@ public class ViewPurseActivity extends AppCompatActivity {
                 null);                                  // порядок сортировки
 
         // Делаем запрос баланса
-        Cursor cursorBudget = db.query(
+        Cursor cursorBudget = _mDbHelper.getDB(
                 FamilyBudget.BudgetEntry.TABLE_NAME,     // таблица
                 projectionOnBudget,                      // столбцы
                 selectionBudget,                              // столбцы для условия WHERE

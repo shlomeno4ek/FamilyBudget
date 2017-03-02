@@ -10,7 +10,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
-import ru.shlomeno4ek.familybudget.data.BudgetDbHelper;
+import ru.shlomeno4ek.familybudget.data.DB;
 import ru.shlomeno4ek.familybudget.data.FamilyBudget;
 
 import static ru.shlomeno4ek.familybudget.MainActivity.LOG_TAG;
@@ -21,7 +21,7 @@ public class EditPurseActivity extends AppCompatActivity {
     private String namePurse;
     private EditText etNamePurse;
     private Button btnSave;
-    private BudgetDbHelper _mDbHelper;
+    private DB _mDbHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,7 +29,8 @@ public class EditPurseActivity extends AppCompatActivity {
         setContentView(R.layout.activity_edit_purse);
 
         // создаем объект для создания и управления версиями БД
-        _mDbHelper = new BudgetDbHelper(this);
+        _mDbHelper = new DB(this);
+        _mDbHelper.open();
 
         //Получаем параменты, переданные в Intent
         Intent intent = getIntent();
@@ -48,8 +49,8 @@ public class EditPurseActivity extends AppCompatActivity {
                 //Если имя изменили то обновляем запись в базе
                 if (!namePurse.equals(etNamePurse.getText())) {
 
-                    // Создадим и откроем для чтения базу данных
-                    SQLiteDatabase db = _mDbHelper.getReadableDatabase();
+//                    // Создадим и откроем для чтения базу данных
+//                    SQLiteDatabase db = _mDbHelper.getReadableDatabase();
 
                     // Создайте новую строку со значениями для вставки.
                     ContentValues newValues = new ContentValues();
@@ -60,12 +61,17 @@ public class EditPurseActivity extends AppCompatActivity {
 
                     Log.d(LOG_TAG, "--- Update in purse: ---");
                     // Обновите строку с указанным индексом, используя новые значения и получаем ее ID
-                    long rowID = db.update(FamilyBudget.PurseEntry.TABLE_NAME, newValues, where, null);
+                    long rowID = _mDbHelper.updateRec(FamilyBudget.PurseEntry.TABLE_NAME, newValues, where, null);
                     Log.d(LOG_TAG, "row updatinf, ID = " + rowID);
                     finish();
                 }
             }
         });
 
+    }
+    protected void onDestroy() {
+        super.onDestroy();
+        // закрываем подключение при выходе
+        _mDbHelper.close();
     }
 }
