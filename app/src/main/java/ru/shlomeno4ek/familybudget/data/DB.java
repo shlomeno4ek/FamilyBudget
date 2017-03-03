@@ -49,29 +49,31 @@ public class DB {
 //        return mDB.query(DATABASE_NAME, null, null, null, null, null, null);
 //    }
 
-    public Cursor getDB(String tableName, String[] projectionOnPurse, String o, String[] o1, String o2, String o3, String o4) {
-        return mDB.query(tableName, projectionOnPurse, o, o1, o2, o3, o4);
+    //Запрос данных из базы
+    public Cursor getDB(String tableName, String[] columns, String selection, String[] selectionArgs, String groupBy, String having, String orderBy) {
+        return mDB.query(tableName, columns, selection, selectionArgs, groupBy, having, orderBy);
     }
 
-    public long addRec(String purse, String o, ContentValues cv) {
-        return mDB.insert(purse, o, cv);
+    //добавление строки в базу
+    public long addRec(String tableName, String nullColumnHack, ContentValues values) {
+        return mDB.insert(tableName, nullColumnHack, values);
     }
 
-    public long updateRec(String tableName, ContentValues newValues, String where, String[] o) {
-        return mDB.update(tableName,newValues,where,o);
+    //обновление строки в базе
+    public long updateRec(String table, ContentValues values, String whereClause, String[] whereArgs) {
+        return mDB.update(table, values, whereClause, whereArgs);
     }
 
-    public Cursor getRawQuery(String query, String[] o) {
-        return mDB.rawQuery(query,o);
+    //Получение курсора по запросу в базу
+    public Cursor getRawQuery(String sql, String[] selectionArgs) {
+        return mDB.rawQuery(sql, selectionArgs);
     }
 
-    public void deleteRec(String tableName, String s, String[] o) {
-        mDB.delete(tableName,s,o);
+    //удаление строки в базе
+    public void deleteRec(String table, String whereClause, String[] whereArgs) {
+        mDB.delete(table, whereClause, whereArgs);
     }
 
-    public Cursor getAllData(String tableName) {
-        return mDB.query(tableName, null, null, null, null, null, null);
-    }
 
     //    // добавить запись в DB_TABLE
 //    public void addRec(String txt, int img) {
