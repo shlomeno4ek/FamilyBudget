@@ -11,6 +11,7 @@ import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -46,6 +47,9 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     protected void onResume() {
         super.onResume();
 
+        // получаем новый курсор с данными
+        getSupportLoaderManager().getLoader(0).forceLoad();
+
         //Получаем массив из Нзавания кошелька и его баланса
 //        String[] temp = displayDatabaseInfo();
 //        //Если массив не NULL то создаем и подключаем адптер для ListView, иначе очищаем ListView
@@ -53,9 +57,6 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 //            ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, displayDatabaseInfo());
 //            _lvMain.setAdapter(adapter);
 //        } else _lvMain.setAdapter(null);
-
-        // получаем новый курсор с данными
-        getSupportLoaderManager().getLoader(0).forceLoad();
     }
 
 //    @Override
@@ -76,19 +77,6 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         //Получаем елементы Activity
         _tvMainActBalansAll = (TextView) findViewById(R.id.tvMainActBalansAll);
         _tvMainActReserveAll = (TextView) findViewById(R.id.tvMainActReserveAll);
-//        _lvMain = (ListView) findViewById(R.id.lvMain);
-
-        //Добавляем действие на щелчок по элементу ListView
-//        _lvMain.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                Intent intent = new Intent(MainActivity.this, ViewPurseActivity.class);
-//                Integer a = idAndNamePurse.get(position);
-//                //Передаем в интент id для ViewPurseActivity
-//                intent.putExtra("id",""+a);
-////                intent.putExtra("id",""+_idAndNamePurses.get(position));
-//                startActivity(intent);
-//            }
-//        });
 
         //SimpleCursoreAdapter
         // формируем столбцы сопоставления
@@ -99,12 +87,63 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
         // создаем адаптер и настраиваем список
         scAdapter = new SimpleCursorAdapter(this, R.layout.item, null, from, to, 0);
+
         _lvMain = (ListView) findViewById(R.id.lvMain);
         _lvMain.setAdapter(scAdapter);
 
+        // добавляем контекстное меню к списку
+        registerForContextMenu(_lvMain);
+
+        //Добавляем действие на щелчок по элементу ListView
+        _lvMain.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent = new Intent(MainActivity.this, ViewPurseActivity.class);
+                //Integer a = idAndNamePurse.get(position);
+                //Передаем в интент id для ViewPurseActivity
+                //intent.putExtra("id",""+a);
+                intent.putExtra("id",""+id);
+//                intent.putExtra("id",""+_idAndNamePurses.get(position));
+                startActivity(intent);
+            }
+        });
+
         // создаем лоадер для чтения данных
         getSupportLoaderManager().initLoader(0, null, this);
+    }
 
+    //Создание контекстного меню для ViewList
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        menu.add(0, FamilyBudget.CM_ADD_OPERATION_ID, 0, R.string.action_add_operations);
+        menu.add(0, FamilyBudget.CM_EDIT_ID, 0, R.string.action_edit_purse);
+    }
+
+    public boolean onContextItemSelected(MenuItem item) {
+        if (item.getItemId() == FamilyBudget.CM_ADD_OPERATION_ID) {
+
+            // получаем из пункта контекстного меню данные по пункту списка
+            AdapterView.AdapterContextMenuInfo acmi = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+
+            // извлекаем id записи и передаем в OperationActivity
+            Intent intent1 = new Intent(MainActivity.this, OperationActivity.class);
+
+            //Передаем в интент id  и namePurse для OperationActivity
+            intent1.putExtra("id",acmi.id);
+            startActivity(intent1);
+
+            return true;
+        } else  if (item.getItemId() == FamilyBudget.CM_EDIT_ID) {
+
+            // получаем из пункта контекстного меню данные по пункту списка
+            AdapterView.AdapterContextMenuInfo acmi = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+
+            // извлекаем id записи и передаем в EditPurseActivity
+            Intent intent = new Intent(MainActivity.this, EditPurseActivity.class);
+            intent.putExtra("id",acmi.id);
+            startActivity(intent);
+            return true;
+        }
+        return super.onContextItemSelected(item);
     }
 
     //Создание меню для Activity
@@ -255,12 +294,12 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
         @Override
         public Cursor loadInBackground() {
-            Cursor cursor = db.getAllData(FamilyBudget.PurseEntry.TABLE_NAME);
-            try {
-                TimeUnit.SECONDS.sleep(3);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            Cursor cursor = db.getDB(FamilyBudget.PurseEntry.TABLE_NAME, null, null, null, null, null, null);
+//            try {
+//                TimeUnit.SECONDS.sleep(3);
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
             return cursor;
         }
 
