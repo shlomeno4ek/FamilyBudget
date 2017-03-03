@@ -8,6 +8,9 @@ import android.provider.BaseColumns;
 
 public final class FamilyBudget {
 
+    public static final int CM_ADD_OPERATION_ID = 1;
+    public static final int CM_EDIT_ID = 2;
+
     private FamilyBudget() {
     };
 
