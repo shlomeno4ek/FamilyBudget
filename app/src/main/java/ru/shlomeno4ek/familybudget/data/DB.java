@@ -7,13 +7,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
-/**
- * Created by шлома-сн on 08.02.2017.
- */
-
 public class DB {
 
-    public static final String LOG_TAG = DB.class.getSimpleName();
+    final static String LOG_TAG = "myLogs";
 
     /**
      * Имя файла базы данных
@@ -44,51 +40,36 @@ public class DB {
         if (mDBHelper!=null) mDBHelper.close();
     }
 
-//    // получить все данные из таблицы DB_TABLE
-//    public Cursor getAllData() {
-//        return mDB.query(DATABASE_NAME, null, null, null, null, null, null);
-//    }
-
     //Запрос данных из базы
     public Cursor getDB(String tableName, String[] columns, String selection, String[] selectionArgs, String groupBy, String having, String orderBy) {
+        Log.d(LOG_TAG, "Читаем из таблицы - " + tableName + ". Колонки: " + columns);
         return mDB.query(tableName, columns, selection, selectionArgs, groupBy, having, orderBy);
     }
 
     //добавление строки в базу
     public long addRec(String tableName, String nullColumnHack, ContentValues values) {
+        Log.d(LOG_TAG, "Добавляем в таблицу - " + tableName + ". Значения: " + values.toString());
         return mDB.insert(tableName, nullColumnHack, values);
     }
 
     //обновление строки в базе
-    public long updateRec(String table, ContentValues values, String whereClause, String[] whereArgs) {
-        return mDB.update(table, values, whereClause, whereArgs);
+    public long updateRec(String tableName, ContentValues values, String whereClause, String[] whereArgs) {
+        Log.d(LOG_TAG, "Обновляем таблицу - " + tableName + ". Значения: " + values.toString());
+        return mDB.update(tableName, values, whereClause, whereArgs);
     }
 
     //Получение курсора по запросу в базу
     public Cursor getRawQuery(String sql, String[] selectionArgs) {
+        Log.d(LOG_TAG, "Производим запрос в базу - " + sql);
         return mDB.rawQuery(sql, selectionArgs);
     }
 
     //удаление строки в базе
-    public void deleteRec(String table, String whereClause, String[] whereArgs) {
-        mDB.delete(table, whereClause, whereArgs);
+    public void deleteRec(String tableName, String whereClause, String[] whereArgs) {
+        Log.d(LOG_TAG, "Удаляем из таблицы - " + tableName + ". Значения: " + whereClause);
+        mDB.delete(tableName, whereClause, whereArgs);
     }
 
-
-    //    // добавить запись в DB_TABLE
-//    public void addRec(String txt, int img) {
-//        ContentValues cv = new ContentValues();
-//        cv.put(COLUMN_TXT, txt);
-//        cv.put(COLUMN_IMG, img);
-//        mDB.insert(DB_TABLE, null, cv);
-//    }
-//
-//    // удалить запись из DB_TABLE
-//    public void delRec(long id) {
-//        mDB.delete(DB_TABLE, COLUMN_ID + " = " + id, null);
-//    }
-//
-//
     // класс по созданию и управлению БД
     private class DBHelper extends SQLiteOpenHelper {
 
@@ -101,7 +82,6 @@ public class DB {
                         int version) {
             super(context, name, factory, version);
         }
-
 
         /**
          * Вызывается при создании базы данных
