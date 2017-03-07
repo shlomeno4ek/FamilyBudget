@@ -3,27 +3,19 @@ package ru.shlomeno4ek.familybudget;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.concurrent.TimeUnit;
 
 import ru.shlomeno4ek.familybudget.data.DB;
 import ru.shlomeno4ek.familybudget.data.FamilyBudget;
@@ -36,11 +28,10 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     private ListView _lvMain;
     private TextView _tvMainActBalansAll;
     private TextView _tvMainActReserveAll;
-    private ArrayList<Integer> _idAndNamePurses;
-    private HashMap<Integer, Integer> idAndNamePurse;
     private double balansAll;
     private double reserveAll;
     private SimpleCursorAdapter scAdapter;
+    Cursor cursor;
 
 
     @Override
@@ -50,20 +41,25 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         // получаем новый курсор с данными
         getSupportLoaderManager().getLoader(0).forceLoad();
 
-        //Получаем массив из Нзавания кошелька и его баланса
-//        String[] temp = displayDatabaseInfo();
-//        //Если массив не NULL то создаем и подключаем адптер для ListView, иначе очищаем ListView
-//        if (temp != null) {
-//            ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, displayDatabaseInfo());
-//            _lvMain.setAdapter(adapter);
-//        } else _lvMain.setAdapter(null);
+        cursor = _mDbHelper.getDB(FamilyBudget.PurseEntry.TABLE_NAME,new String[]{FamilyBudget.PurseEntry.COLUMN_BALANS,FamilyBudget.PurseEntry.COLUMN_RESERVE},null,null,null,null,null);
+        int balansColumnIndex = cursor.getColumnIndex(FamilyBudget.PurseEntry.COLUMN_BALANS);
+        int reserveColumnIndex = cursor.getColumnIndex(FamilyBudget.PurseEntry.COLUMN_RESERVE);
+        balansAll = 0;
+        reserveAll = 0;
+        while (cursor.moveToNext()) {
+            balansAll+=cursor.getDouble(balansColumnIndex);
+            reserveAll+=cursor.getDouble(reserveColumnIndex);
+        }
+
+        if (cursor.getCount()>0){
+            _tvMainActBalansAll.setText("Общий баланс: "+balansAll+" руб.");
+            _tvMainActReserveAll.setText("В резерве: "+reserveAll+" руб.\nНа трату: " + (balansAll-reserveAll) + " руб.");
+        } else {
+            _tvMainActBalansAll.setText("У вас пока не создано ни одного кошелька, дабавьте его через пункт меню");
+            _tvMainActReserveAll.setText("");
+        }
     }
 
-//    @Override
-//    protected void onPause() {
-//        super.onPause();
-//        _mDbHelper.close();
-//    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,11 +94,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         _lvMain.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(MainActivity.this, ViewPurseActivity.class);
-                //Integer a = idAndNamePurse.get(position);
-                //Передаем в интент id для ViewPurseActivity
-                //intent.putExtra("id",""+a);
                 intent.putExtra("id",""+id);
-//                intent.putExtra("id",""+_idAndNamePurses.get(position));
                 startActivity(intent);
             }
         });
@@ -118,30 +110,30 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         menu.add(0, FamilyBudget.CM_EDIT_ID, 0, R.string.action_edit_purse);
     }
 
+    //Добавляем действие на выбор пункта из контекстного меню
     public boolean onContextItemSelected(MenuItem item) {
-        if (item.getItemId() == FamilyBudget.CM_ADD_OPERATION_ID) {
+        AdapterView.AdapterContextMenuInfo acmi;
+        Intent intent;
+        switch (item.getItemId()) {
+            case FamilyBudget.CM_ADD_OPERATION_ID:
+                // получаем из пункта контекстного меню данные по пункту списка
+                acmi = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
 
-            // получаем из пункта контекстного меню данные по пункту списка
-            AdapterView.AdapterContextMenuInfo acmi = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+                // извлекаем id записи и передаем в OperationActivity
+                intent = new Intent(MainActivity.this, OperationActivity.class);
+                intent.putExtra("id",""+acmi.id);
+                startActivity(intent);
 
-            // извлекаем id записи и передаем в OperationActivity
-            Intent intent1 = new Intent(MainActivity.this, OperationActivity.class);
+                return true;
+            case FamilyBudget.CM_EDIT_ID:
+                 //получаем из пункта контекстного меню данные по пункту списка
+                acmi = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
 
-            //Передаем в интент id  и namePurse для OperationActivity
-            intent1.putExtra("id",acmi.id);
-            startActivity(intent1);
-
-            return true;
-        } else  if (item.getItemId() == FamilyBudget.CM_EDIT_ID) {
-
-            // получаем из пункта контекстного меню данные по пункту списка
-            AdapterView.AdapterContextMenuInfo acmi = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
-
-            // извлекаем id записи и передаем в EditPurseActivity
-            Intent intent = new Intent(MainActivity.this, EditPurseActivity.class);
-            intent.putExtra("id",acmi.id);
-            startActivity(intent);
-            return true;
+                // извлекаем id записи и передаем в EditPurseActivity
+                intent = new Intent(MainActivity.this, EditPurseActivity.class);
+                intent.putExtra("id",""+acmi.id);
+                startActivity(intent);
+                return true;
         }
         return super.onContextItemSelected(item);
     }
@@ -175,94 +167,94 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         }
     }
 
-    //Получаем информацию о всех кошельках и возвращаем в виде String[]
-    private String[] displayDatabaseInfo() {
-        balansAll = 0;
-        reserveAll = 0;
-        idAndNamePurse = new HashMap<Integer, Integer>();
-        int i = 0;
-//        // Создадим и откроем для чтения базу данных
-//        SQLiteDatabase db = _mDbHelper.getReadableDatabase();
-        //Массив с названиями для ListView
-        String pursesInfo[];
-
-        // Зададим условие для выборки - список столбцов
-        String[] projectionOnPurse = {
-                FamilyBudget.PurseEntry._ID,
-                FamilyBudget.PurseEntry.COLUMN_NAME,
-                FamilyBudget.PurseEntry.COLUMN_OWNER,
-                FamilyBudget.PurseEntry.COLUMN_BALANS,
-                FamilyBudget.PurseEntry.COLUMN_RESERVE};
-
-//        String[] projectionOnBudget = {
-//                FamilyBudget.BudgetEntry._ID,
-//                FamilyBudget.BudgetEntry.COLUMN_IDPURSE,
-//                FamilyBudget.BudgetEntry.COLUMN_TYPE,
-//                FamilyBudget.BudgetEntry.COLUMN_SUMM,
-//                FamilyBudget.BudgetEntry.COLUMN_NAME,
-//                FamilyBudget.BudgetEntry.COLUMN_DATE};
-
-        // Делаем запрос
-        Cursor cursor = _mDbHelper.getDB(
-                FamilyBudget.PurseEntry.TABLE_NAME,     // таблица
-                projectionOnPurse,                      // столбцы
-                null,                                   // столбцы для условия WHERE
-                null,                                   // значения для условия WHERE
-                null,                                   // Don't group the rows
-                null,                                   // Don't filter by row groups
-                null);                                  // порядок сортировки
-
-        ArrayList<String> allPurses = new ArrayList<>();
-
-//        _idAndNamePurses = new ArrayList<Integer>();
-
-        try {
-            // Узнаем индекс каждого столбца
-            int idColumnIndex = cursor.getColumnIndex(FamilyBudget.PurseEntry._ID);
-            int nameColumnIndex = cursor.getColumnIndex(FamilyBudget.PurseEntry.COLUMN_NAME);
-            int ownerColumnIndex = cursor.getColumnIndex(FamilyBudget.PurseEntry.COLUMN_OWNER);
-            int balansColumnIndex = cursor.getColumnIndex(FamilyBudget.PurseEntry.COLUMN_BALANS);
-            int reserveColumnIndex = cursor.getColumnIndex(FamilyBudget.PurseEntry.COLUMN_RESERVE);
-
-            // Проходим через все ряды
-            while (cursor.moveToNext()) {
-                // Используем индекс для получения строки или числа
-                int currentID = cursor.getInt(idColumnIndex);
-                String currentName = cursor.getString(nameColumnIndex);
-                String currentOwner = cursor.getString(ownerColumnIndex);
-                Double currentBalans = cursor.getDouble(balansColumnIndex);
-                Double currentReserve = cursor.getDouble(reserveColumnIndex);
-
-                // Выводим значения каждого столбца
-                allPurses.add(currentName + "\nБаланс: " + currentBalans + "\nНа трату:  " + (currentBalans-currentReserve) + "\nРезерв: " + currentReserve);
-
-                balansAll+=currentBalans;
-                reserveAll+=currentReserve;
-
-                //Добавляем в map пару i - ID
-//                _idAndNamePurses.add(currentID);
-                idAndNamePurse.put(i,currentID);
-                Log.d(LOG_TAG, "MainActivity читаем из базы id = " + currentID + " имя: " + currentName + " и вставляем в HashMap с ключом: " + i);
-                i++;
-            }
-        } finally {
-            // Всегда закрываем курсор после чтения
-            cursor.close();
-        }
-        //Проверка на количество кошельков, если их не то возвращаем NULL
-        if (allPurses.size()>0) {
-            pursesInfo = new String[allPurses.size()];
-            pursesInfo = allPurses.toArray(pursesInfo);
-            _tvMainActBalansAll.setText("Общий баланс: "+balansAll+" руб.");
-            _tvMainActReserveAll.setText("В резерве: "+reserveAll+" руб.\nНа трату: " + (balansAll-reserveAll) + " руб.");
-        } else {
-            _tvMainActBalansAll.setText("У вас пока не создано ни одного кошелька, дабавьте его через пункт меню");
-            _tvMainActReserveAll.setText("");
-            pursesInfo = null;
-        }
-
-        return pursesInfo;
-    }
+//    Получаем информацию о всех кошельках и возвращаем в виде String[]
+//    private String[] displayDatabaseInfo() {
+//        balansAll = 0;
+//        reserveAll = 0;
+////        idAndNamePurse = new HashMap<Integer, Integer>();
+//        int i = 0;
+////        // Создадим и откроем для чтения базу данных
+////        SQLiteDatabase db = _mDbHelper.getReadableDatabase();
+//        //Массив с названиями для ListView
+//        String pursesInfo[];
+//
+//        // Зададим условие для выборки - список столбцов
+//        String[] projectionOnPurse = {
+//                FamilyBudget.PurseEntry._ID,
+//                FamilyBudget.PurseEntry.COLUMN_NAME,
+//                FamilyBudget.PurseEntry.COLUMN_OWNER,
+//                FamilyBudget.PurseEntry.COLUMN_BALANS,
+//                FamilyBudget.PurseEntry.COLUMN_RESERVE};
+//
+////        String[] projectionOnBudget = {
+////                FamilyBudget.BudgetEntry._ID,
+////                FamilyBudget.BudgetEntry.COLUMN_IDPURSE,
+////                FamilyBudget.BudgetEntry.COLUMN_TYPE,
+////                FamilyBudget.BudgetEntry.COLUMN_SUMM,
+////                FamilyBudget.BudgetEntry.COLUMN_NAME,
+////                FamilyBudget.BudgetEntry.COLUMN_DATE};
+//
+//        // Делаем запрос
+//        Cursor cursor = _mDbHelper.getDB(
+//                FamilyBudget.PurseEntry.TABLE_NAME,     // таблица
+//                projectionOnPurse,                      // столбцы
+//                null,                                   // столбцы для условия WHERE
+//                null,                                   // значения для условия WHERE
+//                null,                                   // Don't group the rows
+//                null,                                   // Don't filter by row groups
+//                null);                                  // порядок сортировки
+//
+//        ArrayList<String> allPurses = new ArrayList<>();
+//
+////        _idAndNamePurses = new ArrayList<Integer>();
+//
+//        try {
+//            // Узнаем индекс каждого столбца
+//            int idColumnIndex = cursor.getColumnIndex(FamilyBudget.PurseEntry._ID);
+//            int nameColumnIndex = cursor.getColumnIndex(FamilyBudget.PurseEntry.COLUMN_NAME);
+//            int ownerColumnIndex = cursor.getColumnIndex(FamilyBudget.PurseEntry.COLUMN_OWNER);
+//            int balansColumnIndex = cursor.getColumnIndex(FamilyBudget.PurseEntry.COLUMN_BALANS);
+//            int reserveColumnIndex = cursor.getColumnIndex(FamilyBudget.PurseEntry.COLUMN_RESERVE);
+//
+//            // Проходим через все ряды
+//            while (cursor.moveToNext()) {
+//                // Используем индекс для получения строки или числа
+//                int currentID = cursor.getInt(idColumnIndex);
+//                String currentName = cursor.getString(nameColumnIndex);
+//                String currentOwner = cursor.getString(ownerColumnIndex);
+//                Double currentBalans = cursor.getDouble(balansColumnIndex);
+//                Double currentReserve = cursor.getDouble(reserveColumnIndex);
+//
+//                // Выводим значения каждого столбца
+//                allPurses.add(currentName + "\nБаланс: " + currentBalans + "\nНа трату:  " + (currentBalans-currentReserve) + "\nРезерв: " + currentReserve);
+//
+//                balansAll+=currentBalans;
+//                reserveAll+=currentReserve;
+//
+//                //Добавляем в map пару i - ID
+////                _idAndNamePurses.add(currentID);
+////                idAndNamePurse.put(i,currentID);
+//                Log.d(LOG_TAG, "MainActivity читаем из базы id = " + currentID + " имя: " + currentName + " и вставляем в HashMap с ключом: " + i);
+//                i++;
+//            }
+//        } finally {
+//            // Всегда закрываем курсор после чтения
+//            cursor.close();
+//        }
+//        //Проверка на количество кошельков, если их не то возвращаем NULL
+//        if (allPurses.size()>0) {
+//            pursesInfo = new String[allPurses.size()];
+//            pursesInfo = allPurses.toArray(pursesInfo);
+//            _tvMainActBalansAll.setText("Общий баланс: "+balansAll+" руб.");
+//            _tvMainActReserveAll.setText("В резерве: "+reserveAll+" руб.\nНа трату: " + (balansAll-reserveAll) + " руб.");
+//        } else {
+//            _tvMainActBalansAll.setText("У вас пока не создано ни одного кошелька, дабавьте его через пункт меню");
+//            _tvMainActReserveAll.setText("");
+//            pursesInfo = null;
+//        }
+//
+//        return pursesInfo;
+//    }
     protected void onDestroy() {
         super.onDestroy();
         // закрываем подключение при выходе
