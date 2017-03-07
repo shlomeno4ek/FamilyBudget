@@ -148,7 +148,7 @@ public class ViewPurseActivity extends AppCompatActivity {
             case R.id.action_edit_purse:
                 Intent intent = new Intent(ViewPurseActivity.this, EditPurseActivity.class);
                 intent.putExtra("id",idPurse);
-                intent.putExtra("namePurse",tvNamePurse.getText().toString().split("\n")[0]);
+//                intent.putExtra("namePurse",tvNamePurse.getText().toString().split("\n")[0]);
                 startActivity(intent);
                 return true;
 
