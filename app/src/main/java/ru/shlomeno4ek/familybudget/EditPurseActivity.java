@@ -2,6 +2,7 @@ package ru.shlomeno4ek.familybudget;
 
 import android.content.ContentValues;
 import android.content.Intent;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -35,7 +36,27 @@ public class EditPurseActivity extends AppCompatActivity {
         //Получаем параменты, переданные в Intent
         Intent intent = getIntent();
         idPurse = intent.getStringExtra("id");
-        namePurse = intent.getStringExtra("namePurse");
+            Log.d(LOG_TAG, "getIntent, ID = " + idPurse);
+        //sql запрос на имя кошелька по id
+        String query = "SELECT " + FamilyBudget.PurseEntry.COLUMN_NAME
+                + " FROM " + FamilyBudget.PurseEntry.TABLE_NAME
+                + " WHERE _id = " + idPurse;
+        //Получаем курсор по кошельку где ID = idPurse
+        Cursor cursor2 = _mDbHelper.getRawQuery(query, null);
+        cursor2.moveToFirst();
+            namePurse = cursor2.getString(cursor2.getColumnIndex(FamilyBudget.PurseEntry.COLUMN_NAME));
+            Log.d(LOG_TAG, "--- Query in purse namePurse: ---");
+
+//        Cursor cursor = _mDbHelper.getDB(
+//                FamilyBudget.PurseEntry.TABLE_NAME,
+//                new String[] {FamilyBudget.PurseEntry.COLUMN_NAME},
+//                FamilyBudget.PurseEntry._ID + "=?",
+//                new String[] {idPurse},
+//                null,
+//                null,
+//                null);
+//        namePurse = cursor.getString(cursor.getColumnIndex(FamilyBudget.PurseEntry.COLUMN_NAME));
+
 
         //Получаем елементы Activity
         btnSave = (Button) findViewById(R.id.btnSave);
@@ -48,9 +69,6 @@ public class EditPurseActivity extends AppCompatActivity {
             public void onClick(View view) {
                 //Если имя изменили то обновляем запись в базе
                 if (!namePurse.equals(etNamePurse.getText())) {
-
-//                    // Создадим и откроем для чтения базу данных
-//                    SQLiteDatabase db = _mDbHelper.getReadableDatabase();
 
                     // Создайте новую строку со значениями для вставки.
                     ContentValues newValues = new ContentValues();
