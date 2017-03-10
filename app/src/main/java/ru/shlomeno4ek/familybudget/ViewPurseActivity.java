@@ -27,10 +27,8 @@ public class ViewPurseActivity extends AppCompatActivity {
     private TextView tvBalansPurse;
     private TextView tvReservPurse;
     private ListView _lvOperationsPurse;
-//    private String pursesInfo[];
     private String idPurse;
     private DB _mDbHelper;
-    private ImageButton _imageBtnAddOperation;
 
     AlertDialog.Builder ad;
     Context context;
@@ -54,19 +52,6 @@ public class ViewPurseActivity extends AppCompatActivity {
         _mDbHelper = new DB(this);
         _mDbHelper.open();
 
-//        //Получаем кнопку добавления операции и устанавливаем на нее действие
-//        _imageBtnAddOperation = (ImageButton) findViewById(R.id.imageBtnAddOperation);
-//        _imageBtnAddOperation.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Intent intent = new Intent(ViewPurseActivity.this, OperationActivity.class);
-//                //Передаем в интент id  и namePurse для OperationActivity
-//                intent.putExtra("id",idPurse);
-//                intent.putExtra("namePurse",tvNamePurse.getText().toString().split("\n")[0]);
-//                startActivity(intent);
-//            }
-//        });
-
         //Подтверждение удаления кошелька
         context = ViewPurseActivity.this;
         String title = "Удаление кошелька";
@@ -82,18 +67,12 @@ public class ViewPurseActivity extends AppCompatActivity {
         //Действия при нажатии подтверждения диалога
         ad.setPositiveButton(button1String, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int arg1) {
-                Toast.makeText(context, "Кошелек удален",
-                        Toast.LENGTH_LONG).show();
-
-//                // Создадим и откроем для чтения базу данных
-//                SQLiteDatabase db = _mDbHelper.getReadableDatabase();
+                Toast.makeText(context, "Кошелек удален", Toast.LENGTH_LONG).show();
 
                 //Удаляем кошелек и все его операции
                 _mDbHelper.deleteRec(FamilyBudget.PurseEntry.TABLE_NAME, FamilyBudget.PurseEntry._ID + "=" + idPurse, null);
                 _mDbHelper.deleteRec(FamilyBudget.BudgetEntry.TABLE_NAME, FamilyBudget.BudgetEntry.COLUMN_IDPURSE + "=" + idPurse, null);
 
-//                //Закрываем подключение к базе
-//                db.close();
                 finish();
             }
         });
@@ -166,8 +145,6 @@ public class ViewPurseActivity extends AppCompatActivity {
     }
 
     private String[] displayDatabaseInfo() {
-//        // Создадим и откроем для чтения базу данных
-//        SQLiteDatabase db = _mDbHelper.getReadableDatabase();
 
         // Зададим условие для выборки - список столбцов
         String[] projectionOnPurse = {

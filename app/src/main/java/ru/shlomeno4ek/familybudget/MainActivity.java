@@ -1,11 +1,7 @@
 package ru.shlomeno4ek.familybudget;
 
-import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -19,8 +15,10 @@ import android.widget.TextView;
 
 import ru.shlomeno4ek.familybudget.data.DB;
 import ru.shlomeno4ek.familybudget.data.FamilyBudget;
+import ru.shlomeno4ek.familybudget.data.MySimpleCursorAdapter;
 
-public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
+//public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
+public class MainActivity extends AppCompatActivity{
 
     final static String LOG_TAG = "myLogs";
 
@@ -32,6 +30,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     private double reserveAll;
     private SimpleCursorAdapter scAdapter;
     Cursor cursor;
+    private MySimpleCursorAdapter mySimpleCursorAdapter;
 
 
     @Override
@@ -53,22 +52,27 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
         if (cursor.getCount()>0){
             _tvMainActBalansAll.setText("Общий баланс: "+balansAll+" руб.");
-            _tvMainActReserveAll.setText("В резерве: "+reserveAll+" руб.\nНа трату: " + (balansAll-reserveAll) + " руб.");
+            _tvMainActReserveAll.setText("В резерве: "+reserveAll+" руб.\nДоступно: " + (balansAll-reserveAll) + " руб.");
         } else {
             _tvMainActBalansAll.setText("У вас пока не создано ни одного кошелька, дабавьте его через пункт меню");
             _tvMainActReserveAll.setText("");
         }
+        if (cursor != null) {
+            cursor.close();
+        }
     }
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // создаем объект для создания и управления версиями БД
-        _mDbHelper = new DB(this);
-        _mDbHelper.open();
+        mySimpleCursorAdapter = new MySimpleCursorAdapter();
+
+//        _mDbHelper = new DB(this);
+//        Log.d(LOG_TAG, "Создаем подключение к БД " +_mDbHelper);
+//        _mDbHelper.open();
+//        _mDbHelper
 
         //Получаем елементы Activity
         _tvMainActBalansAll = (TextView) findViewById(R.id.tvMainActBalansAll);
@@ -82,7 +86,9 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         int[] to = new int[] { R.id.tvNamePurseForLv, R.id.tvBalansPurseForLv,R.id.tvReservPurseForLv};
 
         // создаем адаптер и настраиваем список
-        scAdapter = new SimpleCursorAdapter(this, R.layout.item, null, from, to, 0);
+//        scAdapter = new SimpleCursorAdapter(this, R.layout.item, null, from, to, 0);
+        mySimpleCursorAdapter.createSimpleCursorAdapter(this, R.layout.item, null, from, to, 0);
+        scAdapter = mySimpleCursorAdapter.getSimpleCursorAdapter();
 
         _lvMain = (ListView) findViewById(R.id.lvMain);
         _lvMain.setAdapter(scAdapter);
@@ -255,45 +261,40 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 //
 //        return pursesInfo;
 //    }
-    protected void onDestroy() {
-        super.onDestroy();
-        // закрываем подключение при выходе
-        _mDbHelper.close();
-    }
 
-    @Override
-    public Loader<Cursor> onCreateLoader(int id, Bundle bndl) {
-        return new MyCursorLoader(this, _mDbHelper);
-    }
-
-    @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
-        scAdapter.swapCursor(cursor);
-    }
-
-    @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
-    }
-
-    static class MyCursorLoader extends CursorLoader {
-
-        DB db;
-
-        public MyCursorLoader(Context context, DB db) {
-            super(context);
-            this.db = db;
-        }
-
-        @Override
-        public Cursor loadInBackground() {
-            Cursor cursor = db.getDB(FamilyBudget.PurseEntry.TABLE_NAME, null, null, null, null, null, null);
-//            try {
-//                TimeUnit.SECONDS.sleep(3);
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//            }
-            return cursor;
-        }
-
-    }
+//    @Override
+//    public Loader<Cursor> onCreateLoader(int id, Bundle bndl) {
+//        return new MyCursorLoader(this, _mDbHelper);
+//    }
+//
+//    @Override
+//    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+//        scAdapter.swapCursor(cursor);
+//    }
+//
+//    @Override
+//    public void onLoaderReset(Loader<Cursor> loader) {
+//    }
+//
+//    static class MyCursorLoader extends CursorLoader {
+//
+//        DB db;
+//
+//        public MyCursorLoader(Context context, DB db) {
+//            super(context);
+//            this.db = db;
+//        }
+//
+//        @Override
+//        public Cursor loadInBackground() {
+//            Cursor cursor = db.getDB(FamilyBudget.PurseEntry.TABLE_NAME, null, null, null, null, null, null);
+////            try {
+////                TimeUnit.SECONDS.sleep(3);
+////            } catch (InterruptedException e) {
+////                e.printStackTrace();
+////            }
+//            return cursor;
+//        }
+//
+//    }
 }

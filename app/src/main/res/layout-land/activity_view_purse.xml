@@ -14,18 +14,13 @@
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        tools:ignore="UselessParent">
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/tvNamePurse"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_alignBottom="@+id/btnAddOperations"
-            android:layout_toLeftOf="@+id/btnAddOperations"
-            android:layout_toStartOf="@+id/btnAddOperations"
             android:textAppearance="@style/TextAppearance.AppCompat.Display1"
             tools:ignore="RelativeOverlap,UnknownId,UnknownIdInLayout" />
 
@@ -44,21 +39,7 @@
         <ListView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:id="@+id/lvOperationsPurse"
-            android:layout_below="@+id/imageBtnAddOperation"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true" />
+            android:id="@+id/lvOperationsPurse" />
     </LinearLayout>
-
-    <ImageButton
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:srcCompat="@android:drawable/ic_menu_mylocation"
-        android:id="@+id/imageBtnAddOperation"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:contentDescription=""
-        tools:ignore="ContentDescription" />
 
 </RelativeLayout>
