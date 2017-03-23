@@ -1,10 +1,15 @@
 package ru.shlomeno4ek.familybudget;
 
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -15,10 +20,8 @@ import android.widget.TextView;
 
 import ru.shlomeno4ek.familybudget.data.DB;
 import ru.shlomeno4ek.familybudget.data.FamilyBudget;
-import ru.shlomeno4ek.familybudget.data.MySimpleCursorAdapter;
 
-//public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
-public class MainActivity extends AppCompatActivity{
+public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
     final static String LOG_TAG = "myLogs";
 
@@ -30,8 +33,6 @@ public class MainActivity extends AppCompatActivity{
     private double reserveAll;
     private SimpleCursorAdapter scAdapter;
     Cursor cursor;
-    private MySimpleCursorAdapter mySimpleCursorAdapter;
-
 
     @Override
     protected void onResume() {
@@ -67,12 +68,9 @@ public class MainActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mySimpleCursorAdapter = new MySimpleCursorAdapter();
-
-//        _mDbHelper = new DB(this);
-//        Log.d(LOG_TAG, "Создаем подключение к БД " +_mDbHelper);
-//        _mDbHelper.open();
-//        _mDbHelper
+        _mDbHelper = new DB(this);
+        Log.d(LOG_TAG, "Создаем подключение к БД " +_mDbHelper);
+        _mDbHelper.open();
 
         //Получаем елементы Activity
         _tvMainActBalansAll = (TextView) findViewById(R.id.tvMainActBalansAll);
@@ -86,9 +84,7 @@ public class MainActivity extends AppCompatActivity{
         int[] to = new int[] { R.id.tvNamePurseForLv, R.id.tvBalansPurseForLv,R.id.tvReservPurseForLv};
 
         // создаем адаптер и настраиваем список
-//        scAdapter = new SimpleCursorAdapter(this, R.layout.item, null, from, to, 0);
-        mySimpleCursorAdapter.createSimpleCursorAdapter(this, R.layout.item, null, from, to, 0);
-        scAdapter = mySimpleCursorAdapter.getSimpleCursorAdapter();
+        scAdapter = new SimpleCursorAdapter(this, R.layout.item_purses, null, from, to, 0);
 
         _lvMain = (ListView) findViewById(R.id.lvMain);
         _lvMain.setAdapter(scAdapter);
@@ -262,39 +258,39 @@ public class MainActivity extends AppCompatActivity{
 //        return pursesInfo;
 //    }
 
-//    @Override
-//    public Loader<Cursor> onCreateLoader(int id, Bundle bndl) {
-//        return new MyCursorLoader(this, _mDbHelper);
-//    }
-//
-//    @Override
-//    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
-//        scAdapter.swapCursor(cursor);
-//    }
-//
-//    @Override
-//    public void onLoaderReset(Loader<Cursor> loader) {
-//    }
-//
-//    static class MyCursorLoader extends CursorLoader {
-//
-//        DB db;
-//
-//        public MyCursorLoader(Context context, DB db) {
-//            super(context);
-//            this.db = db;
-//        }
-//
-//        @Override
-//        public Cursor loadInBackground() {
-//            Cursor cursor = db.getDB(FamilyBudget.PurseEntry.TABLE_NAME, null, null, null, null, null, null);
-////            try {
-////                TimeUnit.SECONDS.sleep(3);
-////            } catch (InterruptedException e) {
-////                e.printStackTrace();
-////            }
-//            return cursor;
-//        }
-//
-//    }
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle bndl) {
+        return new MyCursorLoader(this, _mDbHelper);
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+        scAdapter.swapCursor(cursor);
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+    }
+
+    static class MyCursorLoader extends CursorLoader {
+
+        DB db;
+
+        public MyCursorLoader(Context context, DB db) {
+            super(context);
+            this.db = db;
+        }
+
+        @Override
+        public Cursor loadInBackground() {
+            Cursor cursor = db.getDB(FamilyBudget.PurseEntry.TABLE_NAME, null, null, null, null, null, null);
+//            try {
+//                TimeUnit.SECONDS.sleep(3);
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
+            return cursor;
+        }
+
+    }
 }
